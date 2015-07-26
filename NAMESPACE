@@ -1,1 +1,5 @@
 exportPattern("^[[:alpha:]]+")
+importFrom("graphics", "abline", "axis", "box", "grid", "image", "par", "plot")
+importFrom("stats", "as.dendrogram", "as.dist", "chisq.test", "hclust", 
+            "kruskal.test", "lm", "median", "p.adjust", "pf", "quantile", "sd", 
+           "t.test", "wilcox.test")
