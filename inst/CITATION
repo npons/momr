@@ -1,0 +1,12 @@
+citHeader("To cite the ouch package in publications use:")
+citEntry(entry = "Article", 
+    author = personList(as.person("Emmanuelle Le Chatelier"), as.person("Trine Nielsen"), as.person("Junjie Qin"),
+        as.person("Edi Prifti"), as.person("Falk Hildebrand"),  as.person("Gwen Falony"), as.person("Mathieu Almeida")), 
+    title = "Richness of Human Gut Microbiome Correlates with Metabolic Markers", 
+    journal = "Nature", year = 2013, 
+    volume = 500, pages = "541-546", 
+    url = "http://www.nature.com/nature/journal/v500/n7464/full/nature12506.html", 
+    textVersion = paste("Le Chatelier E., Prifti E. et al. (2013)", 
+        "Richness of Human Gut Microbiome Correlates with Metabolic Markers", 
+        "Nature. 500:541--546"))
+citFooter("As momr is continually evolving, you may want to cite its version number. Find it with 'help(package=momr)'.")

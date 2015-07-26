@@ -1,0 +1,286 @@
+---
+title: "MetaOMineR"
+author: "Edi Prifti & Emmanuelle Le Chatelier"
+date: "26.06.15"
+update: "08.07.15"
+output:
+  pdf_document:
+    fig_caption: yes
+    highlight: tango
+    keep_tex: yes
+  html_document: default
+fig_caption: yes
+toc: yes
+---
+
+# Context
+`momr`, is the base package of a larger suite of R packages named `MetaOMineR`, which stands for *Mining MetaOmics data in R*. It encompasses many useful functions and modules needed for the analyses of shotgun Quantitative Metagenomics (QM) data. It can be also used for 16S or other types of omics data. Developed since the beginning of the field, `momr` has evolved and is structured around different modules such as preprocessing, analysis, visualization, map-reduce parallel computing, etc. The package comes with a small subset of a real metagenomics data-set of human gut microbiome from the [MetaHIT](http://metahit.eu) project (Le Chatelier et al, Nature, 2013).
+
+MetaOMineR works with data that can be structured as standalone packages or not. They should contain the needed information to describe a given gene catalog, such as for instance the gene length, annotations, clustering information, etc. In this tutorial we demonstrate some of the functionalities of `momr` with simple examples. 
+
+# Data processing
+In this section we will see how to load the test dataset that comes with the package and how to pre-process it for analysis in a second step. Let us start by loading the momr library.
+
+```{r}
+library(momr)
+library(knitr) # for printing tables
+```
+
+To see what data objects are contained in the package we type:
+
+```{r}
+data(package="momr")
+```
+We will see four objects  
+`- hs_3.3_metahit_genesize`
+`- hs_3.3_metahit_sample_dat_freq`
+`- hs_3.3_metahit_sample_dat_raw`  
+`- mgs_hs_3.3_metahit_sup500`
+
+## Loading the data
+The files are named following these criteria *(hs = homo sapiens; 3.3_metahit = the gene catalog from metahit with 3.3M genes)*. Let us load the raw count data-set after mapping and counting against the *(Qin et al, Nature, 2010)* gene catalog.
+
+```{r}
+# Loading the raw count dataset
+data("hs_3.3_metahit_sample_dat_raw")
+str(hs_3.3_metahit_sample_dat_raw[,10:14])
+```
+
+As we can see `hs_3.3_metahit_sample_dat_raw` is a data frame containing 5000 features (rows) and 292 samples (columns). This dataset is a subset of the whole 3.3M feature data-frame and as we can see is very sparse.
+
+```{r}
+kable(tail(hs_3.3_metahit_sample_dat_raw[,10:14]))
+zeroperc <- round(sum(hs_3.3_metahit_sample_dat_raw==0)/
+                    length(hs_3.3_metahit_sample_dat_raw)*100)
+paste("There are ", zeroperc, "% zeros in this data frame.",sep="")
+```
+
+## Normalization
+This processing step is necessary to be able to compare abundance among genes and samples. For this reason different normalization procedures are implemented in the package. Note that even from an identical number of reads, the total number of counts can vary when filtering the reads for quality or according to the reference exhaustivity. For the experiment to work well we need to select a gene catalog reference that is representative enough for the different microbial ecosystems sampled in the study. There is not yet a gold standard for normalizing data in quantitative metagenomics and the RPKM method has proven to be good enough in different QM projects. We aim to enrich the package with other normalization approached shortly in the future.  
+
+1.	RPKM **(Reads Per Kilobase per Million reads mapped)** is one of the first methods used in QM and was inspired by the RNA-Seq field (Mortazavi et al., Nature Methods, 2008). This approach was initially introduced to facilitate comparisons between genes within a sample and combines between- and within-sample normalization, as it re-scales gene counts to correct for differences in both library sizes and gene length. Let assume that two genes form a given species have different lengths. The longer gene has a higher probability of having more reads mapped to it compared to the shorter one especially when the abundance is low. For this reason we compute a scaling factor which is dependent on the gene length in the normalization process. A second scaling factor applied is the sequencing depth.  
+2.	TC **(Total count)** is a simpler method also used in the 16S datasets. The high variability of sequencing depth among the different samples id inherent of the NGS technology. For this reason it is important to scale the abundance of reads for each sample by the sequencing depth. Technically we can scale each sample by the total number of counts. 
+
+```{r}
+# Normalization should be performed with the whole dataset (3.3M) 
+# Loading the gene length information
+data(hs_3.3_metahit_genesize)
+str(hs_3.3_metahit_genesize)
+norm.data <- normFreqRPKM(dat=hs_3.3_metahit_sample_dat_raw, 
+                          cat=hs_3.3_metahit_genesize)
+kable(tail(norm.data[,10:14]))
+```
+
+Hereafter we will use a subset of the complete dataset normalized using the 3.3M genes. Note that the scaling factor is lower in the extracted dataset compared to the full dataset due to the lower number of reads sampled for this subset of genes.
+
+```{r}
+# Loading the frequency dataset
+data("hs_3.3_metahit_sample_dat_freq")
+kable(tail(hs_3.3_metahit_sample_dat_freq[,10:14]))
+```
+
+## Downsizing
+Another method to reduce the variability that is generated by the sequencing depths is the ***downsizing*** also known as ***rarefaction***. It consists of drawing randomly the same number of reads for each sample and mapping those to the catalog. For this we need to determine a common level of reads to be drawn (sequencing depth).
+
+```{r}
+# Determining the minimal common number of reads
+min_nb_reads <- summary(colSums(hs_3.3_metahit_sample_dat_raw))
+(min_nb_reads["Min."]); (min_nb_reads["Max."])
+min_nb_reads <- min_nb_reads["Min."]
+```
+
+We can notice that the sequencing depth varies greatly in this dataset and this is probably because this is an incomplete dataset. We can perform this for the whole dataset only one time. Next the dataset needs to be normalized as shown above.
+
+```{r}
+# Downsizing the whole matrix
+data.downsized <- downsizeMatrix(data=hs_3.3_metahit_sample_dat_raw[,1:5], 
+                                 level=min_nb_reads, repetitions=1, silent=FALSE)
+kable(tail(data.downsized))
+colSums(data.downsized, na.rm=TRUE)
+```
+
+*Important note*: Let assume that most of the samples are sequenced nicely above a sequencing depth we set, but a few samples have a low number of reads for various reasons. Should we still downsize very low (in order to include them) and lose most of the data? The answer is *No*! We recommend setting up downsizing level sufficiently high to maintain a high counting depth. Samples with a total number of reads below the level won't be downsized (NA will be generated instead) and may be discarded or replaced as a proxy by original raw counts before generating the frequency matrix using `normFreqRPKM` function. 
+
+# Gene richness
+A simple number can describe the complexity of an ecosystem that we call here richness. That is the number of genes that are found to be present `(gene_abundance > 0)` in a given sample. Indeed, different studies have shown that the richness is associated with different aspects of the ecosystem  *(Le Chatelier et al, Nature, 2013)* and correlates strongly with the number of present microbial species *(Nielsen, Almeida et al, Nat Biotech, 2014)*. 
+
+```{r}
+# Downsizing the genecount
+richness <- colSums(hs_3.3_metahit_sample_dat_raw>0, na.rm=TRUE)
+summary(richness)
+```
+
+## Downsizing
+Gene richness is very sensitive to the sequencing depth. For this reason we use the downsizing approach to estimate it and perform this multiple times. Finally we compute a mean estimation of the multiple drawings. 
+
+```{r}
+# Downsizing the matrix multiple times for the computation of gene richness
+data.genenb <- downsizeGC(data=hs_3.3_metahit_sample_dat_raw, 
+                          level=min_nb_reads, repetitions=30, silent=TRUE)
+head(apply(data.genenb,2,mean))
+head(apply(data.genenb,2,sd))
+```
+
+Notice that the standard deviation is quite small for 30 random drawings.
+
+```{r fig1, fig.cap="Raw and downsized richness distribution."}
+richness.dwnz <- colMeans(data.genenb, na.rm=TRUE)
+par(mfrow=c(1,2))
+plot(density(richness), main="gene richness", lwd=2,col="darkred")
+plot(density(richness.dwnz), main="downsized gene richness", lwd=2,col="darkred")
+```
+
+In this example (Figure 1)  we can see the effect of downsizing on gene richness. For instance one sample had a much higher richness than the rest due to the high variability as mentioned above. After downsizing this sample still remained higher but more comparable with the rest.
+
+```{r fig2, fig.cap="Downsizing effect on gene richness."}
+par(mfrow=c(1,1))
+col <-  as.character(cut(colSums(hs_3.3_metahit_sample_dat_raw),
+                         c(0,2^seq(0, 9, by=1))*1000, 
+                         labels=paste("gray",seq(100,10,-10),sep="")))
+plot(richness, richness.dwnz, main="downsizing effect on richness",
+     pch=20,col=col)
+```
+
+This plot (Figure 2) where samples are colored according to read count abundance (the darker the higher) visualize the bias in gene richness estimation due to heterogenous counting depth.
+
+## Upsizing
+As mentioned above for samples with very low sequencing depth (under the downsizing level) the downsizing process will produce NAs and they will not be exploitable. Based on our observations gene richness downsized at different levels will correlate very strongly among the different levels. This observation led us to propose the *upsizing* approach for gene richness estimation, which allows to estimate a higher level distribution and impute the missing data. In the following example we will use different downsizing levels and show how we can use the up-sizing process to solve this issue.
+
+```{r}
+downsize.gc.res <- downsizeGC.all(data = hs_3.3_metahit_sample_dat_raw, 
+               levels = c(600, 5000, 10000, 15000, 20000), 
+               repetitions = 10, silent = TRUE)
+kable(downsize.gc.res[[2]])
+```
+
+This function returns a list of samples each containing a matrix of dimension *n=repetitions* x *l=levels* as illustrated above for the second sample. Now let's transform it as a matrix where each column contain the mean-ed downsized values for each repetition.
+
+```{r}
+downsize.gc.mat <- downsizedRichnessL2T(richness.list = downsize.gc.res)
+kable(head(downsize.gc.mat))
+```
+
+Next, we will use the upsizing approach to estimate the missing values as illustrated in Figure 3.
+
+```{r fig3, fig.cap="Regression of the first two levels downsizing levels. In red are depicted the points not downsized in the second level."}
+upsized <- computeUpsizedGC(richness.table = downsize.gc.mat, 
+                                    keep.real = TRUE)
+kable(head(upsized))
+reg <- lm(upsized[,2] ~ upsized[,1])
+plot(upsized[,2] ~ upsized[,1], main="Regression of the first two levels",
+      xlab=("600 reads"),ylab=("5000 reads"), pch=21)
+abline(reg,col="red")
+points(upsized[is.na(downsize.gc.mat[,2]),2] ~ upsized[is.na(downsize.gc.mat[,2]),1], 
+       pch=20, col="red")
+```
+
+To compare properly gene richness between samples, we recommend to fix the downsizing/upsizing threshold level in a way that the read counts of most of the samples are above the threshold but also without losing much information with a stringent level.
+
+# Sample clustering
+## Heatmap
+Now that the dataset is processed we will relate samples together in order to explore any particular pattern. For this the function `hierClust` will compute the inter-sample distance and use a hierarchical clustering approach cluster samples in a tree. The default distance is computed as `1-cor` where cor is the inter-sample spearman correlation. The hierarchical clustering method is the `ward.D`. This function returns a list containing the correlation matrix, the distance object and the hierarchical clustering object. It also displays a heatmap of the correlation matrix with the ward computed dendrogram (Figure 4). These results can be also used as standalone data to fine-tune the analyses.
+
+```{r fig4, fig.width=10, fig.height=6, fig.cap="Sample heatmap of the correlation matrix clusterd with the ward approach."}
+hc.data <- hierClust(data=hs_3.3_metahit_sample_dat_freq[,1:10], side="col", hclust.method = "ward.D")
+str(hc.data)
+clust.order <- hc.data$mat.hclust$order
+# order samples followin the hierarchical clustering
+ordered.samples <- colnames(hs_3.3_metahit_sample_dat_freq[,1:10])[clust.order]
+# how close are the two first samples (spearman, rho)
+hc.data$mat.rho[ordered.samples[1], ordered.samples[2]]
+```
+
+## Checking for consistency
+When looking for possible contamination or mislabeling in order to make sure that samples in the dataset should not be related ,it is useful to use the `filt.hierClust` function. This routine will extract a subset of the inter-sample correlation matrix and focus on the samples that are closely related (above a given threshold) as illustrated in Figure 5. It also returns a table indicating for each samples the best correlated ones and displays a heatmap of the correlation matrix restricted to the samples correlated above the filter threshold `(plot=TRUE as default)`.
+
+```{r fig5, fig.width=10, fig.height=6, fig.cap="Heatmap of the most correlated observations."}
+# Selecting the most closely related observations
+close.samples <- filt.hierClust(hc.data$mat.rho, hclust.method = "ward.D", 
+                                plot = TRUE, filt = 0.45, size = 4)
+kable(head(close.samples)[,1:6])
+```
+
+# Clustering genes - selecting the most correlated samples
+Genes as other features of interest can be clustered using different techniques. In QM it makes sense biologically to cluster genes since they are indeed genetically linked together in the same molecular structure - ***the genome***. Based on this observation the metagenomic species (MGS) were proposed and published in 2014 *(Nielsen, Almeida et al, Nat Biotech, 2014)*. We have build multiple tools that will allow exploring these objects and here is a preview.
+
+## The mgs catalog
+The MGS catalog can be built using different approaches. We supply in this package a subset of the MGS catalog that was computed in a large dataset in the MetaHIT 3.3M gene catalog. Briefly this is a list of gene (feature) identifiers. 
+
+```{r}
+# load the curated mgs data for the hs_3.3_metahit catalog
+data("mgs_hs_3.3_metahit_sup500")
+# the size of each MGS
+unlist(lapply(mgs_hs_3.3_metahit_sup500,length))
+```
+
+## Projecting genes onto the MGS catalog
+In the following example we will cluster a number of genes in the MGS catalog. We call this: *projecting genes onto the MGS*. The notion of genebag (a bag of genes or features) is recurrent in the architecture of `momr`.
+
+```{r}
+# Projecting a list of genes onto the mgs catalogue
+genebag <- rownames(hs_3.3_metahit_sample_dat_freq)
+mgs <- projectOntoMGS(genebag=genebag, list.mgs=mgs_hs_3.3_metahit_sup500)
+length(genebag)
+unlist(lapply(mgs,length))
+```
+
+You can notice that these 5000 genes fall in 5 different MGS and that 4098 genes are not clustered. Indeed only approximately half of the catalog is clustered, due to different stringent criteria for QM purposes. Now that we know which gene is which MGS we can extract their profiles to explore them further.
+
+```{r}
+# Extracting the profiles of a list of genes from the whole dataset
+mgs.dat <- extractProfiles(mgs, hs_3.3_metahit_sample_dat_freq, silent=FALSE)
+```
+
+This is a list of data frames where we have a data frame for each MGS. 
+
+## Visualizing MGS (the barcodes)
+The barcode visualization is a very good tool for pattern discovery and recognition (Figure 6). It is a kind of heatmap where white A white color indicates absence and from light blue to dark red an increasing abundance. Each color step is a 4-fold in abundance.
+
+```{r fig6, fig.width=10, fig.height=6, fig.cap="Barcodes of the MGS abundance profiles. Samples are in the columns and genes clustered togetehr in the MGS in the rows."}
+# plot the barcodes
+par(mfrow=c(length(mgs.dat),1), mar=c(1,0,0,0))
+for(i in 1:length(mgs.dat)){ 
+  plotBarcode(mgs.dat[[i]], main=names(mgs.dat)[i])
+}
+```
+
+## Reducing dimensions
+The MGS can be transformed in simple tracer vectors using `computeFilteredVectors`. This allows to reduce dimensions and apply different statistical learning tools such as clustering (Figure 7). Different metrics can be used to compute this: the mean, the median or the sum are implemeted at the moment. The function returns a table of the calculated MGS signal in each sample. 
+
+```{r fig7, fig.width=10, fig.height=6, fig.cap="Similarity heatmap and clustering of the MGS."}
+# Computing the filtered vectors
+mgs.mean.vect <- computeFilteredVectors(profile=mgs.dat, type="mean")
+hierClust(t(mgs.mean.vect))
+```
+
+# Identifying differentially abundant features
+Another interesting function is `testRelations`, which allows to identify features (genes, MGS, etc) that are differentially abundant between two groups of samples or correlate with some quantitative variable.
+
+```{r}
+# for the first 500 genes
+class <- c(rep(1,150),rep(2,142))
+res.test <- testRelations(data=hs_3.3_metahit_sample_dat_freq[1:500,],
+                          trait=class,type="wilcoxon")
+print(paste("There are",sum(res.test$p<0.05, na.rm=TRUE),"significant genes and",
+            sum(res.test$q<0.05, na.rm=TRUE), "after adjustment for multiple testing"))
+# keep the significant genes
+res.test <- res.test[res.test$q < 0.05 & !is.na(res.test$q),]
+# sort tham by status and q-value
+res.test <- res.test[order(res.test$status,res.test$q),]
+kable(head(res.test))
+table(res.test$status)
+# test weather the MGS are also differentially abundant with the class
+res.test.mgs <- testRelations(data=mgs.mean.vect, trait=class,type="wilcoxon")
+kable(res.test.mgs[res.test.mgs$q<0.05,])
+```
+
+In the example above we tested whether the first 500 genes of this test dataset are differentially abundant between the groups 1 and 2. Indeed there are 9 genes enriched in 1 and 84 in the second group after multiple testing adjustment. We performed this test also on the vectors of the MGS and two of them are also differentially abundant.
+
+# Conclusion
+`momr` is a very useful package for quantitative metagenomics and only the main functionalities are described here. The package also allows to perform // computing using the map-reduce principles. We are constantly optimizing algorithms and adding new tools so that it really becomes easy to explore QM datasets. The authors would like to acknowledge the very exciting and fruitful environment that MetaHIT community created.
+
+# References
+1. Le Chatelier, Emmanuelle, Trine Nielsen, Junjie Qin, Edi Prifti, Falk Hildebrand, Gwen Falony, Mathieu Almeida, et al “Richness of human gut microbiome correlates with metabolic markers.” Nature 500, no. 7464 (April 9, 2014): 541–546.  
+2. Qin, Junjie, Ruiqiang Li, Jeroen Raes, Manimozhiyan Arumugam, Kristoffer Solvsten Burgdorf, Chaysavanh Manichanh, Trine Nielsen, et al “A human gut microbial gene catalogue established by metagenomic sequencing.” Nature 464, no. 7285 (March 4, 2010): 59–65.  
+3. Mortazavi, Ali, Brian A Williams, Kenneth McCue, Lorian Schaeffer, and Barbara Wold. “Mapping and quantifying mammalian transcriptomes by RNA-Seq..” Nature Methods 5, no. 7 (July 2008): 621–628.  
+4. Nielsen, H Bjørn, Mathieu Almeida, Agnieszka Sierakowska Juncker, Simon Rasmussen, Junhua Li, Shinichi Sunagawa, Damian R Plichta, et al “Identification and assembly of genomes and genetic elements in complex metagenomic samples without using reference genomes.” Nature biotechnology (July 6, 2014): 1–11.
