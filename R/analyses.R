@@ -34,8 +34,8 @@ testRelations <- function (data, trait, type, restrict = rep(TRUE, ncol(data)), 
           tmp <- wilcox.test(data[i, restrict] ~ trait[restrict], 
                              paired = paired)
           res[i, "p"] <- tmp$p.value
-          if (mean(data[i, restrict][trait == trait.val[1]]) > 
-                mean(data[i, restrict][trait == trait.val[2]])) {
+          if (mean(data[i, restrict][trait == trait.val[1]],na.rm=TRUE) > 
+              mean(data[i, restrict][trait == trait.val[2]],na.rm=TRUE)) {
             res[i, "status"] <- trait.val[1]
           }
           else {
@@ -53,8 +53,8 @@ testRelations <- function (data, trait, type, restrict = rep(TRUE, ncol(data)), 
           tmp <- t.test(data[i, restrict] ~ trait[restrict], 
                         paired = paired)
           res[i, "p"] <- tmp$p.value
-          if (mean(data[i, restrict][trait == trait.val[1]]) > 
-                mean(data[i, restrict][trait == trait.val[2]])) {
+          if (mean(data[i, restrict][trait == trait.val[1]],na.rm=TRUE) > 
+              mean(data[i, restrict][trait == trait.val[2]],na.rm=TRUE)) {
             res[i, "status"] <- trait.val[1]
           }
           else {
