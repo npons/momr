@@ -1,7 +1,7 @@
 Package: momr
 Title: Mining Metaomics Data (MetaOMineR)
-Version: 1.1
-Date: 2015-07-24
+Version: 1.101
+Date: 2015-07-30
 Author: Edi Prifti, Emmanuelle Le Chatelier
 Maintainer: Edi Prifti <edi.prifti@gmail.com>
 Description: 'MetaOMineR' suite is a set of R packages that offers many functions and modules needed for the analyses 

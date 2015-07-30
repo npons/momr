@@ -31,15 +31,19 @@ testRelations <- function (data, trait, type, restrict = rep(TRUE, ncol(data)), 
           if (i%%1000 == 0) {
             print(i)
           }
-          tmp <- wilcox.test(data[i, restrict] ~ trait[restrict], 
-                             paired = paired)
-          res[i, "p"] <- tmp$p.value
-          if (mean(data[i, restrict][trait == trait.val[1]]) > 
-                mean(data[i, restrict][trait == trait.val[2]])) {
-            res[i, "status"] <- trait.val[1]
-          }
-          else {
-            res[i, "status"] <- trait.val[2]
+          if(all(rowSums(table(trait[restrict], data[i, restrict]))!=0) & 
+             nrow(table(trait[restrict], data[i, restrict]))==2){ # if enough observations for each class
+            tmp <- wilcox.test(data[i, restrict] ~ trait[restrict], paired = paired)
+            res[i, "p"] <- tmp$p.value
+            if (mean(data[i, restrict][trait == trait.val[1]],na.rm=TRUE) > 
+                mean(data[i, restrict][trait == trait.val[2]],na.rm=TRUE)) {
+              res[i, "status"] <- trait.val[1]
+            }else {
+              res[i, "status"] <- trait.val[2]
+            }
+          }else{
+            res[i, "p"] <- NA
+            res[i, "status"] <- NA
           }
         }
         res[, 4] <- p.adjust(res[, "p"], method = multiple.adjust)
@@ -50,15 +54,20 @@ testRelations <- function (data, trait, type, restrict = rep(TRUE, ncol(data)), 
           if (i%%1000 == 0) {
             print(i)
           }
-          tmp <- t.test(data[i, restrict] ~ trait[restrict], 
-                        paired = paired)
-          res[i, "p"] <- tmp$p.value
-          if (mean(data[i, restrict][trait == trait.val[1]]) > 
-                mean(data[i, restrict][trait == trait.val[2]])) {
-            res[i, "status"] <- trait.val[1]
-          }
-          else {
-            res[i, "status"] <- trait.val[2]
+          if(all(rowSums(table(trait[restrict], data[i, restrict]))>2) & 
+             nrow(table(trait[restrict], data[i, restrict]))==2){ # if enough observations for each class
+            tmp <- t.test(data[i, restrict] ~ trait[restrict], paired = paired)
+            res[i, "p"] <- tmp$p.value
+            if (mean(data[i, restrict][trait == trait.val[1]],na.rm=TRUE) > 
+                mean(data[i, restrict][trait == trait.val[2]],na.rm=TRUE)) {
+              res[i, "status"] <- trait.val[1]
+            }
+            else {
+              res[i, "status"] <- trait.val[2]
+            }
+          }else{
+            res[i, "p"] <- NA
+            res[i, "status"] <- NA
           }
         }
         res[, 4] <- p.adjust(res[, "p"], method = multiple.adjust)
