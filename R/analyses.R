@@ -181,14 +181,14 @@ testRelations <- function (data, trait, type, restrict = rep(TRUE, ncol(data)), 
 #' @param side : the distance can be performed on the columns or on the rows
 #' @param dist : the type of distance used. By default this is correlation based similarity
 #' @param cor.type : when correlation matrix, the default is spearman
-#' @param hclust.method : the hierarchical clustering method, by default it is the ward method
+#' @param hclust.method : the hierarchical clustering method, by default it is the ward.D method
 #' @param side.col.c : a vector of colors to be applied in the columns, usually depincting a class
 #' @param side.col.r : a vector of colors to be applied in the rows, usually depincting a class
 #' @param plot : logical default TRUE. It will plot the heatmap of the similarity with the hierchical clustering
 #' @return it will return a list of three variables, the correlation matrix, the distance matrix and the hclust object
 #' @note updated hierClust functions by elechat april 7th 2015 added options SideColors added + spearman == pearson(rank)
 hierClust <- function (data, side = "col", dist = "correlation", cor.type = "spearman", 
-                       hclust.method = "ward", side.col.c = NULL, side.col.r = NULL, plot = TRUE) {
+                       hclust.method = "ward.D", side.col.c = NULL, side.col.r = NULL, plot = TRUE) {
   res <- NULL
   if (side == "col") {
     if (sum(colSums(data, na.rm=TRUE) == 0) > 0) {
@@ -250,7 +250,7 @@ hierClust <- function (data, side = "col", dist = "correlation", cor.type = "spe
 #' and extracts the sub matrix with the closely related sampless. Only positive correlations are considered here.
 #' @author Emmanuelle Le Chatelier & Edi Prifti
 #' @param mat.rho : square correlation matrix with ids (can be used for also other than just samples)
-#' @param hclust.method : the hierarchical clustering method, by default it is the ward method
+#' @param hclust.method : the hierarchical clustering method, by default it is the ward.D method
 #' @param side.col.c : a vector of colors to be applied in the columns, usually depincting a class
 #' @param side.col.r : a vector of colors to be applied in the rows, usually depincting a class
 #' @param size : the number of samples in the resulting ordered matrix
@@ -258,7 +258,7 @@ hierClust <- function (data, side = "col", dist = "correlation", cor.type = "spe
 #' @param filt : default is 0.5 and is the filtering threshold to be applied
 #' @return it will return a matrix with samples in rows and their closely related ones on the columns along with the 
 #' correlation score.
-filt.hierClust <- function (mat.rho, hclust.method = "ward", side.col.c = NULL, side.col.r = NULL, size=10, plot = TRUE, filt = 0.5) {
+filt.hierClust <- function (mat.rho, hclust.method = "ward.D", side.col.c = NULL, side.col.r = NULL, size=10, plot = TRUE, filt = 0.5) {
   rho <- mat.rho # keep it as a backup
   diag(mat.rho) <- 0
 
