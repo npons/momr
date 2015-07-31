@@ -180,7 +180,6 @@ testRelations <- function (data, trait, type, restrict = rep(TRUE, ncol(data)), 
   return(res)
 }
 
-
 #' \code{hierClust} 
 #' @title hierClust
 #' @description This function computes the pairwise distance between samples and computes a hierarchical clustering
