@@ -93,15 +93,28 @@ launchTask <- function(input, output, script){
 #' @param output : a folder where the processed results will be writen
 #' @return nothing
 watchProgress <- function(input, output){
-  input.files <- dir(input)
-  output.files <- dir(output)
-  return(length(output.files)/length(input.files)*100)
+  progress <- 0
+  while(progress!=100){
+    input.files <- dir(input)
+    output.files <- dir(output)
+    flush.console()
+    cat(progress <- length(output.files)/length(input.files)*100,"\r")
+    flush.console()
+    Sys.sleep(5)
+    # TODO add chack stopping and wrap this into a function
+  }
 }
 
+# old version
+# watchProgress <- function(input, output){
+#   input.files <- dir(input)
+#   output.files <- dir(output)
+#   return(length(output.files)/length(input.files)*100)
+# }
 
 #' \code{mapResults} 
-#' @title mapResults
-#' @description This function loads the results once finished and merges them together in one dataframe
+#' @title mapResults : merge data from // computing (the reduce process)
+#' @description This function loads the results once finished and merges them together in one dataframe. For the moment this is a slow procedure and we are testing ways to accelerate the binding.
 #' @author Edi Prifti
 #' @param folder : the folder where the results are found
 #' @param pattern : the pattern of the split files in the disk preceding the incremental number, default="data_part"
@@ -109,31 +122,35 @@ watchProgress <- function(input, output){
 #' used in the splitData procedure.
 #' @return a merged dataframe : Caution ! The merged results may be shuffeled. It is up to the user to reorder
 #' the data accordingly.
-mapResults <- function (folder=".", pattern = "_result.rda", type = "rows"){
-  if (type %in% c("rows","cols","list")) stop("Please provide a valid mapping type rows,cols,list")
-  
+mapResults <- function (folder = ".", pattern = "_result.rda", type = "rows") {
+  if (!type %in% c("rows", "cols", "list")) 
+    stop("Please provide a valid mapping type rows,cols,list")
   files <- dir(folder, pattern = paste(pattern, sep = "."))
-  files.share <- as.numeric(gsub("_result.rda","",files))
-  files <- files[order(files.share)] 
-  if (type %in% c("rows","cols")){
+  files.share <- as.numeric(gsub("_result.rda", "", files))
+  files <- files[order(files.share)]
+  if (type %in% c("rows", "cols")) {
     res <- c()
     for (i in 1:length(files)) {
-      if(i %% 10 == 0) print(paste("i =",i))
-      load(paste(folder,files[i],sep="/"))
-      data_part_treated <- get(paste("treated"))
-      if (type=="rows") {
+      if (i%%10 == 0) 
+        print(paste("i =", i))
+      load(paste(folder, files[i], sep = "/"))
+      #data_part_treated <- get(paste("treated"))
+      if (type == "rows") {
         res <- rbind(res, data_part_treated)
-      } else {
+      }
+      else {
         res <- cbind(res, data_part_treated)
       }
-    }  
-  }else { # if list
+    }
+  }
+  else {
     res <- list()
     for (i in 1:length(files)) {
-      if(i %% 10 == 0) print(paste("i =",i))
-      load(paste(folder,files[i],sep="/"))
-      data_part_treated <- get(paste("treated"))
-      res <- c(res,data_part_treated)
+      if (i%%10 == 0) 
+        print(paste("i =", i))
+      load(paste(folder, files[i], sep = "/"))
+      #data_part_treated <- get(paste("treated"))
+      res <- c(res, data_part_treated)
     }
   }
   warning("Caution! The merged results may be shuffeled. It is up to the user to reorder the data accordingly")
