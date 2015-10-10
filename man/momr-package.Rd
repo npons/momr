@@ -19,8 +19,8 @@
 \tabular{ll}{
   Package: \tab momr\cr
   Type: \tab Package\cr
-  Version: \tab 1.101\cr
-  Date: \tab 2015-07-30\cr
+  Version: \tab 1.102\cr
+  Date: \tab 2015-10-10\cr
   License: \tab Artistic-2.0\cr
 }
   The starting point of the analyses starts with a read count matrix that has been mapped onto a gene 
@@ -32,6 +32,7 @@
   
   Updates
   \tabular{ll}{
+    2015/10/10: \tab Fix bug in the downsize.matrix function and parallel computing\cr
     2015/06/24: \tab First version for CRAN. One year long changes implemented, map reduce, normalization etc...\cr
     2014/03/24: \tab First official release, licence added, and map-reduce procedures\cr
     2014/02/03: \tab added new functions phenoPairwiseRelations, extractSignificant and lmp\cr

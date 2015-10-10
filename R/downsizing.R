@@ -174,35 +174,43 @@ downsizeGC.all <- function(data, levels= c(seq(1E06,11E06,1E06)), repetitions = 
 #' @return downsized read gene count matrix corresponding to the mean counts obtained with the selected number of independant 
 #'      downsizing procedure
 #' @note if the downsizing level is higher than the number of reads for a given sample than the result will be NA
-downsizeMatrix <- function(data, level= 11000000, repetitions = 1, silent=FALSE){
-  # for all the individuals of the set
-  # data is supposed to contain raw reads and rownames to be id_fragment_external
-  res <- matrix(NA,nrow=nrow(data),ncol=ncol(data)); rownames(res) <- rownames(data); colnames(res) <- colnames(data)
-  for(ind in 1:ncol(data)){
-    if(!silent) print(paste(ind,"Sample",colnames(data)[ind],"with",sum(data[,ind]),"reads and",sum(data[,ind]!=0),"genes"))
-    if(sum(data[,ind]) < level){
-      if(!silent) warning("This sample can't be downsized")
-    }else{
-      v <- data[,ind]; names(v) <- rownames(data)
+downsizeMatrix <- function (data, level = 1.1e+07, repetitions = 1, silent = FALSE) {
+  res <- matrix(NA, nrow = nrow(data), ncol = ncol(data))
+  rownames(res) <- rownames(data)
+  colnames(res) <- colnames(data)
+  for (ind in 1:ncol(data)) {
+    if (!silent) 
+      print(paste(ind, "Sample", colnames(data)[ind], "with", 
+                  sum(data[, ind]), "reads and", sum(data[, ind] != 0), "genes"))
+    if (sum(data[, ind]) < level) {
+      if (!silent) 
+        warning("This sample can't be downsized")
+    }
+    else {
+      v <- data[, ind]
+      names(v) <- rownames(data)
       v.ind <- indexReads(v)
-      # count reads for each sampled gene for each repetition and save these into a matrix
-      mat.sampled <- matrix(0,nrow=nrow(data), ncol=repetitions); colnames(mat.sampled) <- 1:repetitions; rownames(mat.sampled) <- rownames(data)
-      for(step in 1:repetitions){
-        v.samp <- sampleRandomly(v.ind=v.ind, level=level)
+      mat.sampled <- matrix(0, nrow = nrow(data), ncol = repetitions)
+      colnames(mat.sampled) <- 1:repetitions
+      rownames(mat.sampled) <- rownames(data)
+      for (rep in 1:repetitions) {
+        v.samp <- sampleRandomly(v.ind = v.ind, level = level)
         tmp <- countSampledGenes(v.samp)
-        mat.sampled[match(names(tmp),rownames(mat.sampled)),step] <- tmp
-        if(!silent) print(paste("        step",step,"with",sum(mat.sampled[,step]!=0),"genes"))
+        mat.sampled[match(names(tmp), rownames(mat.sampled)), rep] <- tmp
+        if (!silent) 
+          print(paste("        rep", rep, "with", sum(mat.sampled[, rep] != 0), "genes"))
       }
-      # compute the mean counts for each gene
-      if(repetitions==1){
-        res[,ind] <- mat.sampled
-      }else{
-        res[,ind] <- rowMeans(mat.sampled)
+      if (repetitions == 1) {
+        res[, ind] <- mat.sampled
+      }
+      else {
+        res[, ind] <- rowMeans(mat.sampled)
       }
     }
   }
   return(res)
 }
+
 
 #' \code{downsizedRichnessL2T} 
 #' @title downsizedRichnessL2T
