@@ -2,7 +2,7 @@
 title: "MetaOMineR"
 author: "Edi Prifti & Emmanuelle Le Chatelier"
 date: "26.06.15"
-update: "08.07.15"
+update: "14.09.16"
 output:
   pdf_document:
     fig_caption: yes

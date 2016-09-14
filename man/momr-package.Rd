@@ -19,8 +19,8 @@
 \tabular{ll}{
   Package: \tab momr\cr
   Type: \tab Package\cr
-  Version: \tab 1.102\cr
-  Date: \tab 2015-10-10\cr
+  Version: \tab 1.2\cr
+  Date: \tab 2016-09-14\cr
   License: \tab Artistic-2.0\cr
 }
   The starting point of the analyses starts with a read count matrix that has been mapped onto a gene 
@@ -32,6 +32,7 @@
   
   Updates
   \tabular{ll}{
+    2016/09/14: \tab Updating package with a number of fixes and upgrades\cr
     2015/10/10: \tab Fix bug in the downsize.matrix function and parallel computing\cr
     2015/06/24: \tab First version for CRAN. One year long changes implemented, map reduce, normalization etc...\cr
     2014/03/24: \tab First official release, licence added, and map-reduce procedures\cr
@@ -123,7 +124,7 @@ res.test.mgs <- testRelations(data=mgs.mean.vect,trait=c(rep(1,150),rep(2,142)),
 
 #' DOWNSIZING
 #' downsize the matrix
-data.downsized <- downsizeMatrix(data=hs_3.3_metahit_sample_dat_raw[,1:5],level=600,repetitions=1)
+data.downsized <- downsizeMatrix(data=hs_3.3_metahit_sample_dat_raw[,1:5], repetitions=1, level=600)
 colSums(data.downsized, na.rm=TRUE)
 
 #' downsize the genecount

@@ -2,6 +2,7 @@
 
 #' \code{plotBarcode} 
 #' @title plotBarcode
+#' @export
 #' @description plots the intensity of a frequency matrix with a 4-fold color step
 #' @author Edi Prifti & Emmanuelle Le Chatelier
 #' @param data : a frequency matrix to be visualized
@@ -17,9 +18,9 @@ plotBarcode <- function(data, main=""){
   box()
 }
 
-
 #' \code{plotBarcode2} 
 #' @title plotBarcode2
+#' @export
 #' @description plots the intensity of a frequency matrix with a 4-fold color step. Usually used
 #'      for complex figures where different MGS are overlapped and annotated with different data.
 #' @author Edi Prifti & Emmanuelle Le Chatelier
@@ -48,6 +49,7 @@ plotBarcode2 <- function(data, main="",ylabl="", ylabr="", col.axisl="white", co
 
 #' \code{plotBarcodeBW} 
 #' @title plotBarcodeBW
+#' @export
 #' @description plots in black when a signal is different from zero and white otherwise
 #' @author Edi Prifti
 #' @param data : a frequency matrix to be visualized
@@ -61,9 +63,9 @@ plotBarcodeBW <- function(data, main=""){
   box()
 }
 
-
 #' \code{plotPvals} 
 #' @title plotPvals
+#' @export
 #' @description plots a heatmap of a matrix composed of p-values. Gray is not significant at p=0.05
 #'      and significance decrases from skyblue to darkred
 #' @author Edi Prifti
@@ -80,6 +82,7 @@ plotPvals <- function(data, main=""){
 
 #' \code{plotCors} 
 #' @title plotCors
+#' @export
 #' @description plots a heatmap of a matrix composed of correlation values from -1 to 1. The blue 
 #'      colors are negative correlations while the red are positive
 #' @author Edi Prifti
@@ -94,23 +97,64 @@ plotCors <- function(data, main=""){
   box()
 }
 
+
 #' \code{plotCors2} 
 #' @title plotCors2
+#' @export
 #' @description similar to plotCors but with more levels of colors
 #' @author Edi Prifti
 #' @param data : a frequency matrix to be visualized
 #' @param main : the main title of the plot empty by default
+#' @param grid : add the grid on top of the image (default=TRUE)
+#' @param axes : plot the axes (default=TRUE)
+#' @param topdown : reverse order of rows in the matrix (default=TRUE)
 #' @return nothing
-plotCors2 <- function(data, main=""){
+plotCors2 <- function (data, main = "", grid=TRUE, axes=TRUE, topdown=TRUE) {
   col <- list()
-  col$val <- seq(-1,1,1e-1)
-  col$col <- gplots::colorpanel(20,low="blue",mid="white",high="red")
-  image(t(data[nrow(data):1,]), breaks=col$val, col=col$col, axes=F, main=main); 
-  box(); grid(nx=ncol(data),ny=nrow(data),col="black")
-  axis(1,labels=colnames(data), at=(((1:ncol(data))-1)/ncol(data))*1.165,las=2)
-  axis(2,labels=rownames(data), at=(((1:nrow(data))-1)/nrow(data))*1.17,las=2)
+  col$val <- seq(-1, 1, 0.1)
+  col$col <- gplots::colorpanel(20, low = "blue", mid = "white", high = "red")
+  if(topdown) image(t(data[nrow(data):1, ]), breaks = col$val, col = col$col, axes = F, main = main)
+  else image(t(data), breaks = col$val, col = col$col, axes = F, main = main)
+  box()
+  if(grid) grid(nx = ncol(data), ny = nrow(data), col = "black")
+  if(axes){
+    axis(1, at = seq(0,1,length.out=ncol(data)), labels = colnames(data), las = 2)
+    if(topdown) axis(2, at = seq(0,1,length.out=nrow(data)), labels = rev(rownames(data)), las = 2)
+    else axis(2, at = seq(0,1,length.out=nrow(data)), labels = rownames(data), las = 2)
+  }
 }
 
+#' \code{plotCol} 
+#' @export
+#' @title plotCol: a matrix of colored cells when debugging
+#' @import grid
+#' @description a matrix of colored cells when debugging
+#' @author Edi Prifti
+#' @param col : a vector of colors
+#' @param nrow : number of rows in of the matrix (1 = default)
+#' @param ncol : number of columns in of the matrix. If nothing is used it will be computed automatically to fit the cols.
+#' @param txt.col : font color.
+#' @return nothing
+plotCol <- function(col, nrow=1, ncol=ceiling(length(col) / nrow), txt.col="black") {
+  stopifnot(nrow >= 1, ncol >= 1)
+  if(length(col) > nrow*ncol)
+    warning("some colors will not be shown")
+  grid.newpage()
+  gl <- grid.layout(nrow, ncol)
+  pushViewport(viewport(layout=gl))
+  ic <- 1
+  for(i in 1:nrow) {
+    for(j in 1:ncol) {
+      pushViewport(viewport(layout.pos.row=i, layout.pos.col=j))
+      grid.rect(gp= gpar(fill=col[ic]))
+      grid.text(col[ic], gp=gpar(col=txt.col))
+      upViewport()
+      ic <- ic+1
+    }
+  }
+  upViewport()
+  invisible(gl)
+}
 
 #===========================================================================================
 # This section computes and visualizes scores of data variation within a given MGS cluster.
@@ -119,6 +163,7 @@ plotCors2 <- function(data, main=""){
 
 #' \code{presenceScore} 
 #' @title presenceScore
+#' @export
 #' @description Computes the percentage [0,1]of values of a vector that are aboove a given threshold
 #' @author Edi Prifti
 #' @param vect : a numerical vector
@@ -131,17 +176,21 @@ presenceScore <- function(vect, th=0){
 
 #' \code{abondanceScore} 
 #' @title abondanceScore
+#' @export
 #' @description Computes the sum of the vectors divided by the prevalence
 #' @author Edi Prifti
 #' @param vect : a numerical vector
 #' @param th : the threshold to be applied, default is 0
 #' @return a mean abundance 
-abondanceScore <- function(vect, th=0){
-  return(sum(vect) / sum((vect>th)+0.0))
+abondanceScore <- function (vect, th = 0) 
+{
+  return(sum(vect > th)/sum((vect > th) + 0)) # error corrected elc
 }
+
 
 #' \code{computeSignalMetrics} 
 #' @title computeSignalMetrics
+#' @export
 #' @description Computes scores of data variation within a given MGS cluster.
 #' @author Edi Prifti
 #' @param dat : a matrix where operations will be performed on the columns. Please transpose if operations
@@ -183,44 +232,50 @@ computeSignalMetrics <- function(dat){
 
 #' \code{plotMGSQuality} 
 #' @title plotMGSQuality
+#' @export
+#' @importFrom gplots heatmap.2
 #' @description Visualized scores of data variation within a given MGS cluster as well as the barcode of the MGS.
 #' A subset of 50 most connected genes is also plotted the same way.
 #' @author Edi Prifti
 #' @param dat : a matrix where operations will be performed on the columns. Please transpose if operations
 #' are needed in the rows. This is typically an MGS frequency matrix with genes in the rows.
 #' @param main : the name of the plot
-#' @param scores : weather the function should return the computed scores or not. By default is TRUE.
+#' @param return.scores : weather the function should return the computed scores or not (default=TRUE).
 #' @return a matrix of results where scores are in the columns 
-plotMGSQuality <-function(dat, main="mgs", scores=TRUE){
-  par(mfcol=c(6,2), xaxs='i',yaxs='i',mar=c(2,2,2,1))
-  colpan <- c("black", gplots::colorpanel(n=20,low="darkblue",mid="darkorchid",high="red"))
+plotMGSQuality <- function(dat, main = "mgs", return.scores = TRUE) 
+{
+  par(mfcol = c(6, 2), xaxs = "i", yaxs = "i", mar = c(2, 2, 2, 1))
+  colpan <- c("black", colorpanel(n = 20, low = "darkblue", mid = "darkorchid", high = "red"))
   size <- 50
-  if(nrow(dat) < size) {
+  if (nrow(dat) < size) {
     size <- nrow(dat)
     warning("need more than 50 genes")
   }
-  dat50 <- dat[1:size,]
-  plotBarcode(dat50, main=paste(main, nrow(dat50),"genes"))
+  dat50 <- dat[1:size, ]
+  plotBarcode(dat50, main = paste(main, nrow(dat50), "genes"))
   scores50 <- computeSignalMetrics(dat50)
-  for(i in 1:ncol(scores50)){
-    if(all(scores50[,i]==0)){
-      cols="black"
-    }else{
-      cols <- colpan[as.numeric(cut(scores50[,i], breaks = 20))]
+  for (i in 1:ncol(scores50)) {
+    if (all(scores50[, i] == 0)) {
+      cols = "black"
     }
-    plot(scores50[,i], pch=19,cex=0.4, main=colnames(scores50)[i], ylab="", xlab="individual index",col=cols)
+    else {
+      cols <- colpan[as.numeric(cut(scores50[, i], breaks = 20))]
+    }
+    plot(scores50[, i], pch = 19, cex = 0.4, main = colnames(scores50)[i],
+         ylab = "", xlab = "individual index", col = cols)
   }
-  
-  plotBarcode(dat, main=paste(main, nrow(dat),"genes"))
+  plotBarcode(dat, main = paste(main, nrow(dat), "genes"))
   scores <- computeSignalMetrics(dat)
-  for(i in 1:ncol(scores)){
-    if(all(scores[,i]==0)){
-      cols="black"
-    }else{
-      cols <- colpan[as.numeric(cut(scores[,i], breaks = 20))]
+  for (i in 1:ncol(scores)) {
+    if (all(scores[, i] == 0)) {
+      cols = "black"
     }
-    plot(scores[,i], pch=19,cex=0.4, main=colnames(scores)[i], ylab="", xlab="individual index",col=cols)
+    else {
+      cols <- colpan[as.numeric(cut(scores[, i], breaks = 20))]
+    }
+    plot(scores[, i], pch = 19, cex = 0.4, main = colnames(scores)[i], 
+         ylab = "", xlab = "individual index", col = cols)
   }
-  if(scores) return(scores)
+  if (return.scores) 
+    return(scores)
 }
-

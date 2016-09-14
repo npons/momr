@@ -1,5 +1,6 @@
 #' \code{projectOntoMGS} 
 #' @title projectOntoMGS
+#' @export
 #' @description This function takes a list of genes and projects it to a mgs catalogue
 #' @author Edi Prifti & Emmanuelle Le Chatelier
 #' @param genebag : vector of gene_ids
@@ -44,6 +45,7 @@ projectOntoMGS <- function (genebag, list.mgs, res.filt.mode = "size", res.filt.
 
 #' \code{extractProfiles} 
 #' @title extractProfiles
+#' @export
 #' @description This function extracts the profiles from a gene profile matrix of a group of genes or a list 
 #' of groups of genes. It can also restrict the size of the result
 #' @author Edi Prifti & Emmanuelle Le Chatelier
@@ -54,34 +56,68 @@ projectOntoMGS <- function (genebag, list.mgs, res.filt.mode = "size", res.filt.
 #' This is used to extract multiple profiles and filtering the list with a minimal number of genes
 #' @param silent : default TRUE, detailling and following computation progress
 #' @return a matrix or a list of profile matrixes
-extractProfiles <- function(genebag, data, size.max = 15000, size.min = 1, silent=TRUE){
-  if(!is.list(genebag)){
+extractProfiles <- function (genebag, data, size.max = 15000, size.min = 1, silent = TRUE) 
+{
+  if (!is.list(genebag)) 
+  {
     print("Profile extraction from a single gene vector")
-    if(length(genebag) < size.max){
-      res <- data[match(genebag, rownames(data)),]
-    }else{
-      res <- data[match(genebag[1:size.max], rownames(data)),]
+    if (length(genebag) < size.max) 
+    {
+      ind <- match(genebag, rownames(data))
+      if (sum(is.na(ind))>0) 
+      {
+        warning(paste("There ",sum(is.na(ind)),"are genes from the genebag not found in the data !"))
+        ind <- ind[!is.na(ind)]
+      }
+      res <- data[ind, ]
+    }else 
+    {
+      ind <- match(genebag[1:size.max], rownames(data))
+      if (sum(is.na(ind))>0) 
+      {
+        warning(paste("There ",sum(is.na(ind)),"are genes from the genebag not found in the data !"))
+        ind <- ind[!is.na(ind)]
+      }
+      res <- data[ind, ]
     }
-  }else{
+  }
+  else 
+  {
     print("Multiple profile extraction")
-    # list of matrixes to be returned
     res <- list()
-    for(i in 1:length(genebag)){
-      if(i%%10==0 & silent==FALSE){print(i)}
-      if(length(genebag[[i]]) < size.max){
-        res[[i]] <- data[match(genebag[[i]], rownames(data)),]
-      }else{
-        res[[i]] <- data[match(genebag[[i]][1:size.max], rownames(data)),]
+    for (i in 1:length(genebag)) 
+    {
+      if (i%%10 == 0 & silent == FALSE) print(i)
+      if (length(genebag[[i]]) < size.max) 
+      {
+        ind <- match(genebag[[i]], rownames(data))
+        if (sum(is.na(ind))>0) 
+        {
+          warning(paste("There ",sum(is.na(ind)),"are genes from the genebag not found in the data !"))
+          ind <- ind[!is.na(ind)]
+        }
+        res[[i]] <- data[ind, ]
+      } else 
+      {
+        ind <- match(genebag[[i]][1:size.max], rownames(data))
+        if (sum(is.na(ind))>0) 
+        {
+          warning(paste("There ",sum(is.na(ind)),"are genes from the genebag not found in the data !"))
+          ind <- ind[!is.na(ind)]
+        }
+        res[[i]] <- data[ind, ]
       }
     }
     names(res) <- names(genebag)
-    res <- res[as.numeric(summary(genebag)[,"Length"])>=size.min]
+    res <- res[as.numeric(summary(genebag)[, "Length"]) >= size.min]
   }
   return(res)
 }
 
+
 #' \code{aggregateProfiles} 
 #' @title aggregateProfiles
+#' @export
 #' @description This function takes a list of profile matrixes and returns an aggregated big matrix.
 #' The individual matrixes can be filtered in size so that the first X rows are used for each of them.
 #' This function is used to prepare the data and plot different MGS as barcodes.
@@ -92,21 +128,26 @@ extractProfiles <- function(genebag, data, size.max = 15000, size.min = 1, silen
 #' @param min.size : this is the minimum number of rows rows to be selected in the final aggregated matrix. 
 #' If a group has less it will be discarded. By default min.size=max.size.
 #' @return an aggregated profile matrix.
-aggregateProfiles <- function(list.profiles, max.size = 25, min.size = max.size){
-  if(!is.list(list.profiles)){
+aggregateProfiles <- function(list.profiles, max.size = 25, min.size = max.size)
+{
+  if(!is.list(list.profiles))
+  {
     stop("Error! The object is not a list")
   }
   # list of matrices to be returned
   res <- c()
-  for(i in 1:length(list.profiles)){
-    if(nrow(list.profiles[[i]]) >= min.size){
+  for(i in 1:length(list.profiles))
+  {
+    if(nrow(list.profiles[[i]]) >= min.size)
+    {
       res <- rbind(res, list.profiles[[i]][1:min(max.size, nrow(list.profiles[[i]])),])
     }
   }
   return(res)
 }
 
-#' \code{computeFilteredVectors} 
+#' \code{computeFilteredVectors}
+#' @export 
 #' @title computeFilteredVectors
 #' @description filters and computes verctors based on gene profiles from a single matrix or a 
 #' list of matrix profiles
@@ -152,7 +193,8 @@ computeFilteredVectors <- function (profile, type = "mean", filt = 0, debug = FA
 
 #' \code{buildMgsFinal} 
 #' @title buildMgsFinal
-#' @@date December 20th 2013
+#' @export
+#' @date December 20th 2013
 #' @description This function will take a vector of genes (to be transformed into a list of genebags) 
 #'      or a list of genebags and will extract the profiles. Next genes well be ordered by connectivity
 #'      which is to be computed for each group and the 50 most connected are selected to consitute the 
@@ -165,46 +207,84 @@ computeFilteredVectors <- function (profile, type = "mean", filt = 0, debug = FA
 #' @param profiles :  the data profile matrix to extract the profiles
 #' @param conn : if TRUE the connectivity of a group is to be computed and ordered, default = TRUE.
 #' @param silent : print detailled information on progress, default = FALSE.
-#' @param filt : filtering based on percentage of prevalence to avoid noise for no signal samples by 
-#' computeFilteredVectors.
+#' @param filt : filtering based on percentage of prevalence to avoid noise for no signal samples by computeFilteredVectors.
+#' @param save : Save files after each step
 #' @return a list containing the final elements such as the 50 most connected genes, the mean vectors etc
-buildMgsFinal <- function (genebag = NULL, mgs.cat, mgs.taxo, profiles, conn = TRUE, silent = TRUE, filt=20) {
-  # if a list of genes than we need to project it onto the mgs.cat
-  if (!is.list(genebag)) {
+buildMgsFinal <- function (genebag = NULL, mgs.cat, mgs.taxo, profiles, conn = TRUE, silent = TRUE, filt = 10, save=FALSE) { 
+  if (!is.list(genebag)) 
+  {
+    if(!silent) print("           Genebag is not a list, projecting onto the MGS catalogue ...")
     genebag.list <- projectOntoMGS(genebag = genebag, list.mgs = mgs.cat, res.filt.mode = "size", res.filt.threshold = 50)
-    #NOTE: another possibility is to trim the mgs.cat using selectListSize for an upper and lower trim and then projectOntoMGS
-  } else { genebag.list <- genebag }
-  # extract the profiles for the list of mgs
-  genebag.list.dat <- extractProfiles(genebag.list, profiles, silent=silent)
+  } else 
+  {
+    genebag.list <- genebag
+  }
+  genebag.list.dat <- extractProfiles(genebag.list, profiles, silent = silent)
+  if(!silent) 
+  {
+    print("           Profiles have been extracted for each MGS ...")
+  }
+  if(save) 
+  {
+    saveRDS(genebag.list.dat, file="genebag.list.dat.rda", compress=FALSE)
+  }
+  if(!silent & save) 
+  {
+    print("           Profiles file has been saved in the working directory ...")
+  }
   genebag.list.ordered <- list()
-  genebag.list.filtered <- list()
   genebag.list.50 <- list()
-  for (i in 1:length(genebag.list)) {
-    if (i%%10 == 0 & !silent) {print(i)} # inform on where we are
+  if(!silent & conn) print("           Profiles will be reordered for each MGS using connectivity ...")
+  for (i in 1:length(genebag.list)) 
+  {
+    if (i%%100 == 0 & !silent) print(i)
     dat <- genebag.list.dat[[i]]
-    if (conn == TRUE) { # order by connectivity
-      con <- connectivity(dat) # connectivity as sum of correlations using default settings.
+    if (conn == TRUE) 
+    {
+      dat <- filterMat(as.matrix(dat), filt = filt) # EP: filter before the reodering makes more sense
+      con <- connectivity(prof = dat, soft=TRUE, method = "spearman")  # modified. Old script often did not reordered anything
       dat <- dat[order(con, decreasing = T), ]
     }
     genebag.list.ordered[[i]] <- dat
-    genebag.list.filtered[[i]] <- filterMat(as.matrix(dat), filt=filt)
-    genebag.list.50[[i]] <- genebag.list.filtered[[i]][1:50, ]
+    genebag.list.50[[i]] <- genebag.list.ordered[[i]][1:50,]
+  }
+  if(!silent & conn) 
+  {
+    print("           Profiles re-ordering, filtering has been finished ...")
+  }
+  if(!silent & !conn) 
+  {
+    print("           Profiles filtering has been finished ...")
   }
   names(genebag.list.ordered) <- names(genebag.list.dat)
-  names(genebag.list.filtered) <- names(genebag.list.dat)
   names(genebag.list.50) <- names(genebag.list.dat)
-  # build the resulting object
+  if(save & conn) 
+  {
+    saveRDS(genebag.list.ordered, file="genebag.list.ordered.rda", compress=FALSE)
+  }
+  if(save) 
+  {
+    saveRDS(genebag.list.50, file="genebag.list.50.rda", compress=FALSE)
+  }
   res <- list()
   res$genebags <- genebag.list
   res$genebags.all <- mgs.cat[names(genebag.list)]
   res$mgs.profiles <- genebag.list.ordered
   res$mgs.50 <- genebag.list.50
-  res$mean_vectors <- computeFilteredVectors(profile = res$mgs.50, type="mean",filt=0) # the filtering was done on the whole MGS
-  res$taxonomy <- as.data.frame(mgs.taxo[names(res$genebags), ])
+  res$mean_vectors <- computeFilteredVectors(profile = res$mgs.50, type = "mean", filt = filt)  # corr
+  if(!silent) 
+  {
+    print("           The filtered tracer vectors have been created successfully ...")
+  }
+  res$taxonomy <- as.data.frame(mgs.taxo[names(res$genebags),])
   name <- as.character(res$taxonomy$species)
   name <- paste(names(res$genebags), name)
   name <- gsub(" NA", "", name)
   res$taxonomy$name <- name
+  if(!silent) 
+  {
+    print("           All operations are finished ...")
+  }
   return(res)
 }
 
@@ -221,21 +301,19 @@ buildMgsFinal <- function (genebag = NULL, mgs.cat, mgs.taxo, profiles, conn = T
 #' above the threshold
 #' @return a vector of connectivity
 #' @note this connectivity does not use a hard thresholding but is based on a total correlation score
-connectivity <- function (prof, method = "pearson", th = 0, soft=FALSE) {
-  if(th < 0 | th >= 1 ) {
+connectivity <- function (prof, method = "pearson", th = 0, soft = FALSE)  
+{
+  if (th < 0 | th >= 1) {
     stop("The threhold should be positive and smaller than 1.")
-  }else{
-    # compute the correlation matrix
+  }
+  else {
     data.cor <- Hmisc::rcorr(t(prof), type = method)$r
-    if(soft){ # if real correlations
-      if(th==0){
-        con <- colSums(data.cor , na.rm = TRUE)
-      }else{ # don't take into account values lower than the threshold
-        tmp <- data.cor; tmp[tmp<=th] <- 0
-        con <- colSums(tmp, na.rm=TRUE)
-      }
-    }else{ # hard threholding
-      con <- colSums((data.cor > th) + 0, na.rm=TRUE)
+    if (soft) {
+      data.cor[data.cor <= th] <- 0                 #
+      con <- colSums(data.cor, na.rm = TRUE)        #
+    }
+    else {
+      con <- colSums(data.cor > th, na.rm = TRUE)   #
     }
   }
   return(con)
@@ -244,6 +322,7 @@ connectivity <- function (prof, method = "pearson", th = 0, soft=FALSE) {
 
 #' \code{selectListSize} 
 #' @title selectListSize
+#' @export
 #' @description This function will sextract a part of a list based on the length of its components. Typically
 #' a genebag list can be used. This function will work for uniclass lists of vectors and data frames.
 #' @author Edi Prifti

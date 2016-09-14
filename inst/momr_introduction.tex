@@ -1,0 +1,1069 @@
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+    \usepackage{xltxtra,xunicode}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Mapping=tex-text,Scale=MatchLowercase}
+  \newcommand{\euro}{€}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{{#1}}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{{#1}}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{{#1}}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{{#1}}}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{{#1}}}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{{#1}}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{{#1}}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{{#1}}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{{#1}}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{{#1}}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{{#1}}}
+\newcommand{\RegionMarkerTok}[1]{{#1}}
+\newcommand{\ErrorTok}[1]{\textbf{{#1}}}
+\newcommand{\NormalTok}[1]{{#1}}
+\usepackage{longtable,booktabs}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\ifxetex
+  \usepackage[setpagesize=false, % page size defined by xetex
+              unicode=false, % unicode breaks when used with xetex
+              xetex]{hyperref}
+\else
+  \usepackage[unicode=true]{hyperref}
+\fi
+\hypersetup{breaklinks=true,
+            bookmarks=true,
+            pdfauthor={Edi Prifti \& Emmanuelle Le Chatelier},
+            pdftitle={MetaOMineR},
+            colorlinks=true,
+            citecolor=blue,
+            urlcolor=blue,
+            linkcolor=magenta,
+            pdfborder={0 0 0}}
+\urlstyle{same}  % don't use monospace font for urls
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\setcounter{secnumdepth}{0}
+
+%%% Use protect on footnotes to avoid problems with footnotes in titles
+\let\rmarkdownfootnote\footnote%
+\def\footnote{\protect\rmarkdownfootnote}
+
+%%% Change title format to be more compact
+\usepackage{titling}
+
+% Create subtitle command for use in maketitle
+\newcommand{\subtitle}[1]{
+  \posttitle{
+    \begin{center}\large#1\end{center}
+    }
+}
+
+\setlength{\droptitle}{-2em}
+  \title{MetaOMineR}
+  \pretitle{\vspace{\droptitle}\centering\huge}
+  \posttitle{\par}
+  \author{Edi Prifti \& Emmanuelle Le Chatelier}
+  \preauthor{\centering\large\emph}
+  \postauthor{\par}
+  \predate{\centering\large\emph}
+  \postdate{\par}
+  \date{26.06.15}
+
+
+
+\begin{document}
+
+\maketitle
+
+
+{
+\hypersetup{linkcolor=black}
+\setcounter{tocdepth}{3}
+\tableofcontents
+}
+\section{Context}\label{context}
+
+\texttt{momr}, is the base package of a larger suite of R packages named
+\texttt{MetaOMineR}, which stands for \emph{Mining MetaOmics data in R}.
+It encompasses many useful functions and modules needed for the analyses
+of shotgun Quantitative Metagenomics (QM) data. It can be also used for
+16S or other types of omics data. Developed since the beginning of the
+field, \texttt{momr} has evolved and is structured around different
+modules such as preprocessing, analysis, visualization, map-reduce
+parallel computing, etc. The package comes with a small subset of a real
+metagenomics data-set of human gut microbiome from the
+\href{http://metahit.eu}{MetaHIT} project (Le Chatelier et al, Nature,
+2013).
+
+MetaOMineR works with data that can be structured as standalone packages
+or not. They should contain the needed information to describe a given
+gene catalog, such as for instance the gene length, annotations,
+clustering information, etc. In this tutorial we demonstrate some of the
+functionalities of \texttt{momr} with simple examples.
+
+\section{Data processing}\label{data-processing}
+
+In this section we will see how to load the test dataset that comes with
+the package and how to pre-process it for analysis in a second step. Let
+us start by loading the momr library.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(momr)}
+\KeywordTok{library}\NormalTok{(knitr) }\CommentTok{# for printing tables}
+\end{Highlighting}
+\end{Shaded}
+
+To see what data objects are contained in the package we type:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{data}\NormalTok{(}\DataTypeTok{package=}\StringTok{"momr"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+We will see four objects\\\texttt{- hs\_3.3\_metahit\_genesize}
+\texttt{- hs\_3.3\_metahit\_sample\_dat\_freq}
+\texttt{- hs\_3.3\_metahit\_sample\_dat\_raw}\\\texttt{- mgs\_hs\_3.3\_metahit\_sup500}
+
+\subsection{Loading the data}\label{loading-the-data}
+
+The files are named following these criteria \emph{(hs = homo sapiens;
+3.3\_metahit = the gene catalog from metahit with 3.3M genes)}. Let us
+load the raw count data-set after mapping and counting against the
+\emph{(Qin et al, Nature, 2010)} gene catalog.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Loading the raw count dataset}
+\KeywordTok{data}\NormalTok{(}\StringTok{"hs_3.3_metahit_sample_dat_raw"}\NormalTok{)}
+\KeywordTok{str}\NormalTok{(hs_3.3_metahit_sample_dat_raw[,}\DecValTok{10}\NormalTok{:}\DecValTok{14}\NormalTok{])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  int [1:5000, 1:5] 0 0 0 0 0 0 0 0 0 0 ...
+##  - attr(*, "dimnames")=List of 2
+##   ..$ : chr [1:5000] "4955" "4956" "4957" "4958" ...
+##   ..$ : chr [1:5] "MH0109" "MH0110" "MH0186" "MH0108" ...
+\end{verbatim}
+
+As we can see \texttt{hs\_3.3\_metahit\_sample\_dat\_raw} is a data
+frame containing 5000 features (rows) and 292 samples (columns). This
+dataset is a subset of the whole 3.3M feature data-frame and as we can
+see is very sparse.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{kable}\NormalTok{(}\KeywordTok{tail}\NormalTok{(hs_3.3_metahit_sample_dat_raw[,}\DecValTok{10}\NormalTok{:}\DecValTok{14}\NormalTok{]))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[c]{@{}lrrrrr@{}}
+\toprule
+& MH0109 & MH0110 & MH0186 & MH0108 & MH0236\tabularnewline
+\midrule
+\endhead
+9904 & 0 & 0 & 0 & 0 & 0\tabularnewline
+9905 & 0 & 0 & 0 & 0 & 0\tabularnewline
+9906 & 0 & 0 & 0 & 0 & 0\tabularnewline
+9907 & 0 & 0 & 0 & 0 & 0\tabularnewline
+9908 & 38 & 58 & 12 & 3 & 14\tabularnewline
+9909 & 0 & 0 & 0 & 0 & 0\tabularnewline
+\bottomrule
+\end{longtable}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{zeroperc <-}\StringTok{ }\KeywordTok{round}\NormalTok{(}\KeywordTok{sum}\NormalTok{(hs_3.3_metahit_sample_dat_raw==}\DecValTok{0}\NormalTok{)/}
+\StringTok{                    }\KeywordTok{length}\NormalTok{(hs_3.3_metahit_sample_dat_raw)*}\DecValTok{100}\NormalTok{)}
+\KeywordTok{paste}\NormalTok{(}\StringTok{"There are "}\NormalTok{, zeroperc, }\StringTok{"% zeros in this data frame."}\NormalTok{,}\DataTypeTok{sep=}\StringTok{""}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "There are 81% zeros in this data frame."
+\end{verbatim}
+
+\subsection{Normalization}\label{normalization}
+
+This processing step is necessary to be able to compare abundance among
+genes and samples. For this reason different normalization procedures
+are implemented in the package. Note that even from an identical number
+of reads, the total number of counts can vary when filtering the reads
+for quality or according to the reference exhaustivity. For the
+experiment to work well we need to select a gene catalog reference that
+is representative enough for the different microbial ecosystems sampled
+in the study. There is not yet a gold standard for normalizing data in
+quantitative metagenomics and the RPKM method has proven to be good
+enough in different QM projects. We aim to enrich the package with other
+normalization approached shortly in the future.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\itemsep1pt\parskip0pt\parsep0pt
+\item
+  RPKM \textbf{(Reads Per Kilobase per Million reads mapped)} is one of
+  the first methods used in QM and was inspired by the RNA-Seq field
+  (Mortazavi et al., Nature Methods, 2008). This approach was initially
+  introduced to facilitate comparisons between genes within a sample and
+  combines between- and within-sample normalization, as it re-scales
+  gene counts to correct for differences in both library sizes and gene
+  length. Let assume that two genes form a given species have different
+  lengths. The longer gene has a higher probability of having more reads
+  mapped to it compared to the shorter one especially when the abundance
+  is low. For this reason we compute a scaling factor which is dependent
+  on the gene length in the normalization process. A second scaling
+  factor applied is the sequencing depth.\\
+\item
+  TC \textbf{(Total count)} is a simpler method also used in the 16S
+  datasets. The high variability of sequencing depth among the different
+  samples id inherent of the NGS technology. For this reason it is
+  important to scale the abundance of reads for each sample by the
+  sequencing depth. Technically we can scale each sample by the total
+  number of counts.
+\end{enumerate}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Normalization should be performed with the whole dataset (3.3M) }
+\CommentTok{# Loading the gene length information}
+\KeywordTok{data}\NormalTok{(hs_3.3_metahit_genesize)}
+\KeywordTok{str}\NormalTok{(hs_3.3_metahit_genesize)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  Named int [1:5000] 1083 1746 813 504 162 1356 150 1263 1794 273 ...
+##  - attr(*, "names")= chr [1:5000] "4955" "4956" "4957" "4958" ...
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{norm.data <-}\StringTok{ }\KeywordTok{normFreqRPKM}\NormalTok{(}\DataTypeTok{dat=}\NormalTok{hs_3.3_metahit_sample_dat_raw, }
+                          \DataTypeTok{cat=}\NormalTok{hs_3.3_metahit_genesize)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "The dataset is a matrix"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{kable}\NormalTok{(}\KeywordTok{tail}\NormalTok{(norm.data[,}\DecValTok{10}\NormalTok{:}\DecValTok{14}\NormalTok{]))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[c]{@{}lrrrrr@{}}
+\toprule
+& MH0109 & MH0110 & MH0186 & MH0108 & MH0236\tabularnewline
+\midrule
+\endhead
+9904 & 0.0000000 & 0.0000000 & 0.0000000 & 0.00e+00 &
+0.0000000\tabularnewline
+9905 & 0.0000000 & 0.0000000 & 0.0000000 & 0.00e+00 &
+0.0000000\tabularnewline
+9906 & 0.0000000 & 0.0000000 & 0.0000000 & 0.00e+00 &
+0.0000000\tabularnewline
+9907 & 0.0000000 & 0.0000000 & 0.0000000 & 0.00e+00 &
+0.0000000\tabularnewline
+9908 & 0.0004564 & 0.0004709 & 0.0002019 & 9.99e-05 &
+0.0001233\tabularnewline
+9909 & 0.0000000 & 0.0000000 & 0.0000000 & 0.00e+00 &
+0.0000000\tabularnewline
+\bottomrule
+\end{longtable}
+
+Hereafter we will use a subset of the complete dataset normalized using
+the 3.3M genes. Note that the scaling factor is lower in the extracted
+dataset compared to the full dataset due to the lower number of reads
+sampled for this subset of genes.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Loading the frequency dataset}
+\KeywordTok{data}\NormalTok{(}\StringTok{"hs_3.3_metahit_sample_dat_freq"}\NormalTok{)}
+\KeywordTok{kable}\NormalTok{(}\KeywordTok{tail}\NormalTok{(hs_3.3_metahit_sample_dat_freq[,}\DecValTok{10}\NormalTok{:}\DecValTok{14}\NormalTok{]))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[c]{@{}lrrrrr@{}}
+\toprule
+& MH0109 & MH0110 & MH0186 & MH0108 & MH0236\tabularnewline
+\midrule
+\endhead
+9904 & 0e+00 & 0e+00 & 0e+00 & 0e+00 & 0e+00\tabularnewline
+9905 & 0e+00 & 0e+00 & 0e+00 & 0e+00 & 0e+00\tabularnewline
+9906 & 0e+00 & 0e+00 & 0e+00 & 0e+00 & 0e+00\tabularnewline
+9907 & 0e+00 & 0e+00 & 0e+00 & 0e+00 & 0e+00\tabularnewline
+9908 & 6e-07 & 1e-06 & 2e-07 & 1e-07 & 2e-07\tabularnewline
+9909 & 0e+00 & 0e+00 & 0e+00 & 0e+00 & 0e+00\tabularnewline
+\bottomrule
+\end{longtable}
+
+\subsection{Downsizing}\label{downsizing}
+
+Another method to reduce the variability that is generated by the
+sequencing depths is the \textbf{\emph{downsizing}} also known as
+\textbf{\emph{rarefaction}}. It consists of drawing randomly the same
+number of reads for each sample and mapping those to the catalog. For
+this we need to determine a common level of reads to be drawn
+(sequencing depth).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Determining the minimal common number of reads}
+\NormalTok{min_nb_reads <-}\StringTok{ }\KeywordTok{summary}\NormalTok{(}\KeywordTok{colSums}\NormalTok{(hs_3.3_metahit_sample_dat_raw))}
+\NormalTok{(min_nb_reads[}\StringTok{"Min."}\NormalTok{]); (min_nb_reads[}\StringTok{"Max."}\NormalTok{])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Min. 
+##  661
+\end{verbatim}
+
+\begin{verbatim}
+##   Max. 
+## 274400
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{min_nb_reads <-}\StringTok{ }\NormalTok{min_nb_reads[}\StringTok{"Min."}\NormalTok{]}
+\end{Highlighting}
+\end{Shaded}
+
+We can notice that the sequencing depth varies greatly in this dataset
+and this is probably because this is an incomplete dataset. We can
+perform this for the whole dataset only one time. Next the dataset needs
+to be normalized as shown above.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Downsizing the whole matrix}
+\NormalTok{data.downsized <-}\StringTok{ }\KeywordTok{downsizeMatrix}\NormalTok{(}\DataTypeTok{data=}\NormalTok{hs_3.3_metahit_sample_dat_raw[,}\DecValTok{1}\NormalTok{:}\DecValTok{5}\NormalTok{], }
+                                 \DataTypeTok{level=}\NormalTok{min_nb_reads, }\DataTypeTok{repetitions=}\DecValTok{1}\NormalTok{, }\DataTypeTok{silent=}\OtherTok{FALSE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "1 Sample MH0277 with 661 reads and 54 genes"
+## [1] "        step 1 with 54 genes"
+## [1] "2 Sample MH0087 with 7346 reads and 160 genes"
+## [1] "        step 1 with 79 genes"
+## [1] "3 Sample MH0444 with 37988 reads and 384 genes"
+## [1] "        step 1 with 108 genes"
+## [1] "4 Sample MH0156 with 20868 reads and 333 genes"
+## [1] "        step 1 with 115 genes"
+## [1] "5 Sample MH0333 with 5671 reads and 182 genes"
+## [1] "        step 1 with 105 genes"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{kable}\NormalTok{(}\KeywordTok{tail}\NormalTok{(data.downsized))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[c]{@{}lrrrrr@{}}
+\toprule
+& MH0277 & MH0087 & MH0444 & MH0156 & MH0333\tabularnewline
+\midrule
+\endhead
+9904 & 0 & 0 & 0 & 0 & 0\tabularnewline
+9905 & 0 & 0 & 0 & 0 & 0\tabularnewline
+9906 & 0 & 0 & 0 & 0 & 0\tabularnewline
+9907 & 0 & 0 & 0 & 0 & 0\tabularnewline
+9908 & 0 & 3 & 0 & 1 & 2\tabularnewline
+9909 & 0 & 0 & 0 & 0 & 0\tabularnewline
+\bottomrule
+\end{longtable}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{colSums}\NormalTok{(data.downsized, }\DataTypeTok{na.rm=}\OtherTok{TRUE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## MH0277 MH0087 MH0444 MH0156 MH0333 
+##    661    661    661    661    661
+\end{verbatim}
+
+\emph{Important note}: Let assume that most of the samples are sequenced
+nicely above a sequencing depth we set, but a few samples have a low
+number of reads for various reasons. Should we still downsize very low
+(in order to include them) and lose most of the data? The answer is
+\emph{No}! We recommend setting up downsizing level sufficiently high to
+maintain a high counting depth. Samples with a total number of reads
+below the level won't be downsized (NA will be generated instead) and
+may be discarded or replaced as a proxy by original raw counts before
+generating the frequency matrix using \texttt{normFreqRPKM} function.
+
+\section{Gene richness}\label{gene-richness}
+
+A simple number can describe the complexity of an ecosystem that we call
+here richness. That is the number of genes that are found to be present
+\texttt{(gene\_abundance \textgreater{} 0)} in a given sample. Indeed,
+different studies have shown that the richness is associated with
+different aspects of the ecosystem \emph{(Le Chatelier et al, Nature,
+2013)} and correlates strongly with the number of present microbial
+species \emph{(Nielsen, Almeida et al, Nat Biotech, 2014)}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Downsizing the genecount}
+\NormalTok{richness <-}\StringTok{ }\KeywordTok{colSums}\NormalTok{(hs_3.3_metahit_sample_dat_raw>}\DecValTok{0}\NormalTok{, }\DataTypeTok{na.rm=}\OtherTok{TRUE}\NormalTok{)}
+\KeywordTok{summary}\NormalTok{(richness)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##    54.0   720.8   956.0   941.8  1123.0  4909.0
+\end{verbatim}
+
+\subsection{Downsizing}\label{downsizing-1}
+
+Gene richness is very sensitive to the sequencing depth. For this reason
+we use the downsizing approach to estimate it and perform this multiple
+times. Finally we compute a mean estimation of the multiple drawings.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Downsizing the matrix multiple times for the computation of gene richness}
+\NormalTok{data.genenb <-}\StringTok{ }\KeywordTok{downsizeGC}\NormalTok{(}\DataTypeTok{data=}\NormalTok{hs_3.3_metahit_sample_dat_raw, }
+                          \DataTypeTok{level=}\NormalTok{min_nb_reads, }\DataTypeTok{repetitions=}\DecValTok{30}\NormalTok{, }\DataTypeTok{silent=}\OtherTok{TRUE}\NormalTok{)}
+\KeywordTok{head}\NormalTok{(}\KeywordTok{apply}\NormalTok{(data.genenb,}\DecValTok{2}\NormalTok{,mean))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##    MH0277    MH0087    MH0444    MH0156    MH0333    MH0233 
+##  54.00000  78.33333 113.70000 108.50000 105.26667 149.70000
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{head}\NormalTok{(}\KeywordTok{apply}\NormalTok{(data.genenb,}\DecValTok{2}\NormalTok{,sd))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   MH0277   MH0087   MH0444   MH0156   MH0333   MH0233 
+## 0.000000 2.832488 5.045654 4.747050 4.346488 6.670315
+\end{verbatim}
+
+Notice that the standard deviation is quite small for 30 random
+drawings.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{richness.dwnz <-}\StringTok{ }\KeywordTok{colMeans}\NormalTok{(data.genenb, }\DataTypeTok{na.rm=}\OtherTok{TRUE}\NormalTok{)}
+\KeywordTok{par}\NormalTok{(}\DataTypeTok{mfrow=}\KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{))}
+\KeywordTok{plot}\NormalTok{(}\KeywordTok{density}\NormalTok{(richness), }\DataTypeTok{main=}\StringTok{"gene richness"}\NormalTok{, }\DataTypeTok{lwd=}\DecValTok{2}\NormalTok{,}\DataTypeTok{col=}\StringTok{"darkred"}\NormalTok{)}
+\KeywordTok{plot}\NormalTok{(}\KeywordTok{density}\NormalTok{(richness.dwnz), }\DataTypeTok{main=}\StringTok{"downsized gene richness"}\NormalTok{, }\DataTypeTok{lwd=}\DecValTok{2}\NormalTok{,}\DataTypeTok{col=}\StringTok{"darkred"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics{momr_introduction_files/figure-latex/fig1-1.pdf}
+\caption{Raw and downsized richness distribution.}
+\end{figure}
+
+In this example (Figure 1) we can see the effect of downsizing on gene
+richness. For instance one sample had a much higher richness than the
+rest due to the high variability as mentioned above. After downsizing
+this sample still remained higher but more comparable with the rest.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{par}\NormalTok{(}\DataTypeTok{mfrow=}\KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{1}\NormalTok{))}
+\NormalTok{col <-}\StringTok{  }\KeywordTok{as.character}\NormalTok{(}\KeywordTok{cut}\NormalTok{(}\KeywordTok{colSums}\NormalTok{(hs_3.3_metahit_sample_dat_raw),}
+                         \KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{2}\NormalTok{^}\KeywordTok{seq}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{9}\NormalTok{, }\DataTypeTok{by=}\DecValTok{1}\NormalTok{))*}\DecValTok{1000}\NormalTok{, }
+                         \DataTypeTok{labels=}\KeywordTok{paste}\NormalTok{(}\StringTok{"gray"}\NormalTok{,}\KeywordTok{seq}\NormalTok{(}\DecValTok{100}\NormalTok{,}\DecValTok{10}\NormalTok{,-}\DecValTok{10}\NormalTok{),}\DataTypeTok{sep=}\StringTok{""}\NormalTok{)))}
+\KeywordTok{plot}\NormalTok{(richness, richness.dwnz, }\DataTypeTok{main=}\StringTok{"downsizing effect on richness"}\NormalTok{,}
+     \DataTypeTok{pch=}\DecValTok{20}\NormalTok{,}\DataTypeTok{col=}\NormalTok{col)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics{momr_introduction_files/figure-latex/fig2-1.pdf}
+\caption{Downsizing effect on gene richness.}
+\end{figure}
+
+This plot (Figure 2) where samples are colored according to read count
+abundance (the darker the higher) visualize the bias in gene richness
+estimation due to heterogenous counting depth.
+
+\subsection{Upsizing}\label{upsizing}
+
+As mentioned above for samples with very low sequencing depth (under the
+downsizing level) the downsizing process will produce NAs and they will
+not be exploitable. Based on our observations gene richness downsized at
+different levels will correlate very strongly among the different
+levels. This observation led us to propose the \emph{upsizing} approach
+for gene richness estimation, which allows to estimate a higher level
+distribution and impute the missing data. In the following example we
+will use different downsizing levels and show how we can use the
+up-sizing process to solve this issue.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{downsize.gc.res <-}\StringTok{ }\KeywordTok{downsizeGC.all}\NormalTok{(}\DataTypeTok{data =} \NormalTok{hs_3.3_metahit_sample_dat_raw, }
+               \DataTypeTok{levels =} \KeywordTok{c}\NormalTok{(}\DecValTok{600}\NormalTok{, }\DecValTok{5000}\NormalTok{, }\DecValTok{10000}\NormalTok{, }\DecValTok{15000}\NormalTok{, }\DecValTok{20000}\NormalTok{), }
+               \DataTypeTok{repetitions =} \DecValTok{10}\NormalTok{, }\DataTypeTok{silent =} \OtherTok{TRUE}\NormalTok{)}
+\KeywordTok{kable}\NormalTok{(downsize.gc.res[[}\DecValTok{2}\NormalTok{]])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[c]{@{}rrrrr@{}}
+\toprule
+down\_6e-04M & down\_0.005M & down\_0.01M & down\_0.015M &
+down\_0.02M\tabularnewline
+\midrule
+\endhead
+82 & 146 & NA & NA & NA\tabularnewline
+74 & 141 & NA & NA & NA\tabularnewline
+80 & 144 & NA & NA & NA\tabularnewline
+70 & 143 & NA & NA & NA\tabularnewline
+82 & 143 & NA & NA & NA\tabularnewline
+73 & 143 & NA & NA & NA\tabularnewline
+78 & 144 & NA & NA & NA\tabularnewline
+78 & 142 & NA & NA & NA\tabularnewline
+78 & 142 & NA & NA & NA\tabularnewline
+77 & 143 & NA & NA & NA\tabularnewline
+\bottomrule
+\end{longtable}
+
+This function returns a list of samples each containing a matrix of
+dimension \emph{n=repetitions} x \emph{l=levels} as illustrated above
+for the second sample. Now let's transform it as a matrix where each
+column contain the mean-ed downsized values for each repetition.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{downsize.gc.mat <-}\StringTok{ }\KeywordTok{downsizedRichnessL2T}\NormalTok{(}\DataTypeTok{richness.list =} \NormalTok{downsize.gc.res)}
+\KeywordTok{kable}\NormalTok{(}\KeywordTok{head}\NormalTok{(downsize.gc.mat))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[c]{@{}lrrrrr@{}}
+\toprule
+& down\_6e-04M & down\_0.005M & down\_0.01M & down\_0.015M &
+down\_0.02M\tabularnewline
+\midrule
+\endhead
+MH0277 & 49.4 & NA & NA & NA & NA\tabularnewline
+MH0087 & 77.2 & 143.1 & NA & NA & NA\tabularnewline
+MH0444 & 106.3 & 212.3 & 266.9 & 293.7 & 323.9\tabularnewline
+MH0156 & 102.8 & 234.2 & 278.0 & 307.2 & 329.8\tabularnewline
+MH0333 & 101.4 & 177.7 & NA & NA & NA\tabularnewline
+MH0233 & 144.9 & 313.4 & 373.4 & 415.4 & 443.1\tabularnewline
+\bottomrule
+\end{longtable}
+
+Next, we will use the upsizing approach to estimate the missing values
+as illustrated in Figure 3.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{upsized <-}\StringTok{ }\KeywordTok{computeUpsizedGC}\NormalTok{(}\DataTypeTok{richness.table =} \NormalTok{downsize.gc.mat, }
+                                    \DataTypeTok{keep.real =} \OtherTok{TRUE}\NormalTok{)}
+\KeywordTok{kable}\NormalTok{(}\KeywordTok{head}\NormalTok{(upsized))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[c]{@{}lrrrrr@{}}
+\toprule
+& down\_6e-04M\_una & down\_0.005M\_una & down\_0.01M\_una &
+down\_0.015M\_una & down\_0.02M\_una\tabularnewline
+\midrule
+\endhead
+MH0277 & 49 & 72 & 73 & 76 & 76\tabularnewline
+MH0087 & 77 & 143 & 163 & 177 & 184\tabularnewline
+MH0444 & 106 & 212 & 267 & 294 & 324\tabularnewline
+MH0156 & 103 & 234 & 278 & 307 & 330\tabularnewline
+MH0333 & 101 & 178 & 207 & 226 & 237\tabularnewline
+MH0233 & 145 & 313 & 373 & 415 & 443\tabularnewline
+\bottomrule
+\end{longtable}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{reg <-}\StringTok{ }\KeywordTok{lm}\NormalTok{(upsized[,}\DecValTok{2}\NormalTok{] ~}\StringTok{ }\NormalTok{upsized[,}\DecValTok{1}\NormalTok{])}
+\KeywordTok{plot}\NormalTok{(upsized[,}\DecValTok{2}\NormalTok{] ~}\StringTok{ }\NormalTok{upsized[,}\DecValTok{1}\NormalTok{], }\DataTypeTok{main=}\StringTok{"Regression of the first two levels"}\NormalTok{,}
+      \DataTypeTok{xlab=}\NormalTok{(}\StringTok{"600 reads"}\NormalTok{),}\DataTypeTok{ylab=}\NormalTok{(}\StringTok{"5000 reads"}\NormalTok{), }\DataTypeTok{pch=}\DecValTok{21}\NormalTok{)}
+\KeywordTok{abline}\NormalTok{(reg,}\DataTypeTok{col=}\StringTok{"red"}\NormalTok{)}
+\KeywordTok{points}\NormalTok{(upsized[}\KeywordTok{is.na}\NormalTok{(downsize.gc.mat[,}\DecValTok{2}\NormalTok{]),}\DecValTok{2}\NormalTok{] ~}\StringTok{ }\NormalTok{upsized[}\KeywordTok{is.na}\NormalTok{(downsize.gc.mat[,}\DecValTok{2}\NormalTok{]),}\DecValTok{1}\NormalTok{], }
+       \DataTypeTok{pch=}\DecValTok{20}\NormalTok{, }\DataTypeTok{col=}\StringTok{"red"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics{momr_introduction_files/figure-latex/fig3-1.pdf}
+\caption{Regression of the first two levels downsizing levels. In red
+are depicted the points not downsized in the second level.}
+\end{figure}
+
+To compare properly gene richness between samples, we recommend to fix
+the downsizing/upsizing threshold level in a way that the read counts of
+most of the samples are above the threshold but also without losing much
+information with a stringent level.
+
+\section{Sample clustering}\label{sample-clustering}
+
+\subsection{Heatmap}\label{heatmap}
+
+Now that the dataset is processed we will relate samples together in
+order to explore any particular pattern. For this the function
+\texttt{hierClust} will compute the inter-sample distance and use a
+hierarchical clustering approach cluster samples in a tree. The default
+distance is computed as \texttt{1-cor} where cor is the inter-sample
+spearman correlation. The hierarchical clustering method is the
+\texttt{ward.D}. This function returns a list containing the correlation
+matrix, the distance object and the hierarchical clustering object. It
+also displays a heatmap of the correlation matrix with the ward computed
+dendrogram (Figure 4). These results can be also used as standalone data
+to fine-tune the analyses.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{hc.data <-}\StringTok{ }\KeywordTok{hierClust}\NormalTok{(}\DataTypeTok{data=}\NormalTok{hs_3.3_metahit_sample_dat_freq[,}\DecValTok{1}\NormalTok{:}\DecValTok{10}\NormalTok{], }\DataTypeTok{side=}\StringTok{"col"}\NormalTok{, }\DataTypeTok{hclust.method =} \StringTok{"ward.D"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics{momr_introduction_files/figure-latex/fig4-1.pdf}
+\caption{Sample heatmap of the correlation matrix clusterd with the ward
+approach.}
+\end{figure}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{str}\NormalTok{(hc.data)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## List of 3
+##  $ mat.rho   : num [1:10, 1:10] 1 0.182 0.151 0.132 0.104 ...
+##   ..- attr(*, "dimnames")=List of 2
+##   .. ..$ : chr [1:10] "MH0277" "MH0087" "MH0444" "MH0156" ...
+##   .. ..$ : chr [1:10] "MH0277" "MH0087" "MH0444" "MH0156" ...
+##  $ mat.dist  :Class 'dist'  atomic [1:45] 0.818 0.849 0.868 0.896 0.874 ...
+##   .. ..- attr(*, "Labels")= chr [1:10] "MH0277" "MH0087" "MH0444" "MH0156" ...
+##   .. ..- attr(*, "Size")= int 10
+##   .. ..- attr(*, "call")= language as.dist.default(m = 1 - mat.rho)
+##   .. ..- attr(*, "Diag")= logi FALSE
+##   .. ..- attr(*, "Upper")= logi FALSE
+##  $ mat.hclust:List of 7
+##   ..$ merge      : int [1:9, 1:2] -6 -4 -10 -2 -7 -5 4 5 -1 -8 ...
+##   ..$ height     : num [1:9] 0.471 0.523 0.608 0.623 0.686 ...
+##   ..$ order      : int [1:10] 1 7 6 8 2 3 5 10 4 9
+##   ..$ labels     : chr [1:10] "MH0277" "MH0087" "MH0444" "MH0156" ...
+##   ..$ method     : chr "ward.D"
+##   ..$ call       : language hclust(d = mat.dist, method = hclust.method)
+##   ..$ dist.method: NULL
+##   ..- attr(*, "class")= chr "hclust"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{clust.order <-}\StringTok{ }\NormalTok{hc.data$mat.hclust$order}
+\CommentTok{# order samples followin the hierarchical clustering}
+\NormalTok{ordered.samples <-}\StringTok{ }\KeywordTok{colnames}\NormalTok{(hs_3.3_metahit_sample_dat_freq[,}\DecValTok{1}\NormalTok{:}\DecValTok{10}\NormalTok{])[clust.order]}
+\CommentTok{# how close are the two first samples (spearman, rho)}
+\NormalTok{hc.data$mat.rho[ordered.samples[}\DecValTok{1}\NormalTok{], ordered.samples[}\DecValTok{2}\NormalTok{]]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0.1148695
+\end{verbatim}
+
+\subsection{Checking for consistency}\label{checking-for-consistency}
+
+When looking for possible contamination or mislabeling in order to make
+sure that samples in the dataset should not be related ,it is useful to
+use the \texttt{filt.hierClust} function. This routine will extract a
+subset of the inter-sample correlation matrix and focus on the samples
+that are closely related (above a given threshold) as illustrated in
+Figure 5. It also returns a table indicating for each samples the best
+correlated ones and displays a heatmap of the correlation matrix
+restricted to the samples correlated above the filter threshold
+\texttt{(plot=TRUE as default)}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Selecting the most closely related observations}
+\NormalTok{close.samples <-}\StringTok{ }\KeywordTok{filt.hierClust}\NormalTok{(hc.data$mat.rho, }\DataTypeTok{hclust.method =} \StringTok{"ward.D"}\NormalTok{, }
+                                \DataTypeTok{plot =} \OtherTok{TRUE}\NormalTok{, }\DataTypeTok{filt =} \FloatTok{0.45}\NormalTok{, }\DataTypeTok{size =} \DecValTok{4}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics{momr_introduction_files/figure-latex/fig5-1.pdf}
+\caption{Heatmap of the most correlated observations.}
+\end{figure}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{kable}\NormalTok{(}\KeywordTok{head}\NormalTok{(close.samples)[,}\DecValTok{1}\NormalTok{:}\DecValTok{6}\NormalTok{])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[c]{@{}llrlrlr@{}}
+\toprule
+& Hit\_1 & Hit\_rho\_1 & Hit\_2 & Hit\_rho\_2 & Hit\_3 &
+Hit\_rho\_3\tabularnewline
+\midrule
+\endhead
+MH0277 & MH0087 & 0.182 & MH0239 & 0.159 & MH0109 & 0.156\tabularnewline
+MH0087 & MH0444 & 0.377 & MH0109 & 0.372 & MH0420 & 0.352\tabularnewline
+MH0444 & MH0239 & 0.392 & MH0087 & 0.377 & MH0156 & 0.333\tabularnewline
+MH0156 & MH0420 & 0.477 & MH0109 & 0.387 & MH0179 & 0.350\tabularnewline
+MH0333 & MH0420 & 0.332 & MH0156 & 0.302 & MH0233 & 0.259\tabularnewline
+MH0233 & MH0239 & 0.529 & MH0179 & 0.400 & MH0420 & 0.322\tabularnewline
+\bottomrule
+\end{longtable}
+
+\section{Clustering genes - selecting the most correlated
+samples}\label{clustering-genes---selecting-the-most-correlated-samples}
+
+Genes as other features of interest can be clustered using different
+techniques. In QM it makes sense biologically to cluster genes since
+they are indeed genetically linked together in the same molecular
+structure - \textbf{\emph{the genome}}. Based on this observation the
+metagenomic species (MGS) were proposed and published in 2014
+\emph{(Nielsen, Almeida et al, Nat Biotech, 2014)}. We have build
+multiple tools that will allow exploring these objects and here is a
+preview.
+
+\subsection{The mgs catalog}\label{the-mgs-catalog}
+
+The MGS catalog can be built using different approaches. We supply in
+this package a subset of the MGS catalog that was computed in a large
+dataset in the MetaHIT 3.3M gene catalog. Briefly this is a list of gene
+(feature) identifiers.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# load the curated mgs data for the hs_3.3_metahit catalog}
+\KeywordTok{data}\NormalTok{(}\StringTok{"mgs_hs_3.3_metahit_sup500"}\NormalTok{)}
+\CommentTok{# the size of each MGS}
+\KeywordTok{unlist}\NormalTok{(}\KeywordTok{lapply}\NormalTok{(mgs_hs_3.3_metahit_sup500,length))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 10763_0_2   10766_2    10770_    10775_    10780_    1_11_2    11747_ 
+##      1708      2249      2778      1436       599       783      4728 
+##    11752_    11757_      1_20   12719_1   12720_1    12723_       1_3 
+##      2274       811      2240      1113      2056      2198       827 
+##    13608_       1_4    1533_1     241_2      273_      319_   4373_16 
+##      1233       642       694      2931      2241       943      3001
+\end{verbatim}
+
+\subsection{Projecting genes onto the MGS
+catalog}\label{projecting-genes-onto-the-mgs-catalog}
+
+In the following example we will cluster a number of genes in the MGS
+catalog. We call this: \emph{projecting genes onto the MGS}. The notion
+of genebag (a bag of genes or features) is recurrent in the architecture
+of \texttt{momr}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Projecting a list of genes onto the mgs catalogue}
+\NormalTok{genebag <-}\StringTok{ }\KeywordTok{rownames}\NormalTok{(hs_3.3_metahit_sample_dat_freq)}
+\NormalTok{mgs <-}\StringTok{ }\KeywordTok{projectOntoMGS}\NormalTok{(}\DataTypeTok{genebag=}\NormalTok{genebag, }\DataTypeTok{list.mgs=}\NormalTok{mgs_hs_3.3_metahit_sup500)}
+\KeywordTok{length}\NormalTok{(genebag)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 5000
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{unlist}\NormalTok{(}\KeywordTok{lapply}\NormalTok{(mgs,length))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##        1533_1         241_2          273_          319_       4373_16 
+##           131           495            54            80           142 
+## not_projected 
+##          4098
+\end{verbatim}
+
+You can notice that these 5000 genes fall in 5 different MGS and that
+4098 genes are not clustered. Indeed only approximately half of the
+catalog is clustered, due to different stringent criteria for QM
+purposes. Now that we know which gene is which MGS we can extract their
+profiles to explore them further.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Extracting the profiles of a list of genes from the whole dataset}
+\NormalTok{mgs.dat <-}\StringTok{ }\KeywordTok{extractProfiles}\NormalTok{(mgs, hs_3.3_metahit_sample_dat_freq, }\DataTypeTok{silent=}\OtherTok{FALSE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "Multiple profile extraction"
+\end{verbatim}
+
+This is a list of data frames where we have a data frame for each MGS.
+
+\subsection{Visualizing MGS (the
+barcodes)}\label{visualizing-mgs-the-barcodes}
+
+The barcode visualization is a very good tool for pattern discovery and
+recognition (Figure 6). It is a kind of heatmap where white A white
+color indicates absence and from light blue to dark red an increasing
+abundance. Each color step is a 4-fold in abundance.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# plot the barcodes}
+\KeywordTok{par}\NormalTok{(}\DataTypeTok{mfrow=}\KeywordTok{c}\NormalTok{(}\KeywordTok{length}\NormalTok{(mgs.dat),}\DecValTok{1}\NormalTok{), }\DataTypeTok{mar=}\KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{0}\NormalTok{,}\DecValTok{0}\NormalTok{,}\DecValTok{0}\NormalTok{))}
+\NormalTok{for(i in }\DecValTok{1}\NormalTok{:}\KeywordTok{length}\NormalTok{(mgs.dat))\{ }
+  \KeywordTok{plotBarcode}\NormalTok{(mgs.dat[[i]], }\DataTypeTok{main=}\KeywordTok{names}\NormalTok{(mgs.dat)[i])}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics{momr_introduction_files/figure-latex/fig6-1.pdf}
+\caption{Barcodes of the MGS abundance profiles. Samples are in the
+columns and genes clustered togetehr in the MGS in the rows.}
+\end{figure}
+
+\subsection{Reducing dimensions}\label{reducing-dimensions}
+
+The MGS can be transformed in simple tracer vectors using
+\texttt{computeFilteredVectors}. This allows to reduce dimensions and
+apply different statistical learning tools such as clustering (Figure
+7). Different metrics can be used to compute this: the mean, the median
+or the sum are implemeted at the moment. The function returns a table of
+the calculated MGS signal in each sample.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Computing the filtered vectors}
+\NormalTok{mgs.mean.vect <-}\StringTok{ }\KeywordTok{computeFilteredVectors}\NormalTok{(}\DataTypeTok{profile=}\NormalTok{mgs.dat, }\DataTypeTok{type=}\StringTok{"mean"}\NormalTok{)}
+\KeywordTok{hierClust}\NormalTok{(}\KeywordTok{t}\NormalTok{(mgs.mean.vect))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## The "ward" method has been renamed to "ward.D"; note new "ward.D2"
+\end{verbatim}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics{momr_introduction_files/figure-latex/fig7-1.pdf}
+\caption{Similarity heatmap and clustering of the MGS.}
+\end{figure}
+
+\begin{verbatim}
+## $mat.rho
+##                   1533_1         241_2       273_       319_    4373_16
+## 1533_1        1.00000000  0.1336279064 0.03183426 0.10000386 0.16266416
+## 241_2         0.13362791  1.0000000000 0.05561149 0.13894849 0.05708167
+## 273_          0.03183426  0.0556114912 1.00000000 0.07835247 0.01794230
+## 319_          0.10000386  0.1389484853 0.07835247 1.00000000 0.15109205
+## 4373_16       0.16266416  0.0570816696 0.01794230 0.15109205 1.00000000
+## not_projected 0.07064679 -0.0005112535 0.03702869 0.08821160 0.03419235
+##               not_projected
+## 1533_1         0.0706467852
+## 241_2         -0.0005112535
+## 273_           0.0370286889
+## 319_           0.0882116035
+## 4373_16        0.0341923498
+## not_projected  1.0000000000
+## 
+## $mat.dist
+##                  1533_1     241_2      273_      319_   4373_16
+## 241_2         0.8663721                                        
+## 273_          0.9681657 0.9443885                              
+## 319_          0.8999961 0.8610515 0.9216475                    
+## 4373_16       0.8373358 0.9429183 0.9820577 0.8489079          
+## not_projected 0.9293532 1.0005113 0.9629713 0.9117884 0.9658077
+## 
+## $mat.hclust
+## 
+## Call:
+## hclust(d = mat.dist, method = hclust.method)
+## 
+## Cluster method   : ward.D 
+## Number of objects: 6
+\end{verbatim}
+
+\section{Identifying differentially abundant
+features}\label{identifying-differentially-abundant-features}
+
+Another interesting function is \texttt{testRelations}, which allows to
+identify features (genes, MGS, etc) that are differentially abundant
+between two groups of samples or correlate with some quantitative
+variable.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# for the first 500 genes}
+\NormalTok{class <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\KeywordTok{rep}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{150}\NormalTok{),}\KeywordTok{rep}\NormalTok{(}\DecValTok{2}\NormalTok{,}\DecValTok{142}\NormalTok{))}
+\NormalTok{res.test <-}\StringTok{ }\KeywordTok{testRelations}\NormalTok{(}\DataTypeTok{data=}\NormalTok{hs_3.3_metahit_sample_dat_freq[}\DecValTok{1}\NormalTok{:}\DecValTok{500}\NormalTok{,],}
+                          \DataTypeTok{trait=}\NormalTok{class,}\DataTypeTok{type=}\StringTok{"wilcoxon"}\NormalTok{)}
+\KeywordTok{print}\NormalTok{(}\KeywordTok{paste}\NormalTok{(}\StringTok{"There are"}\NormalTok{,}\KeywordTok{sum}\NormalTok{(res.test$p<}\FloatTok{0.05}\NormalTok{, }\DataTypeTok{na.rm=}\OtherTok{TRUE}\NormalTok{),}\StringTok{"significant genes and"}\NormalTok{,}
+            \KeywordTok{sum}\NormalTok{(res.test$q<}\FloatTok{0.05}\NormalTok{, }\DataTypeTok{na.rm=}\OtherTok{TRUE}\NormalTok{), }\StringTok{"after adjustment for multiple testing"}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "There are 135 significant genes and 93 after adjustment for multiple testing"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# keep the significant genes}
+\NormalTok{res.test <-}\StringTok{ }\NormalTok{res.test[res.test$q <}\StringTok{ }\FloatTok{0.05} \NormalTok{&}\StringTok{ }\NormalTok{!}\KeywordTok{is.na}\NormalTok{(res.test$q),]}
+\CommentTok{# sort tham by status and q-value}
+\NormalTok{res.test <-}\StringTok{ }\NormalTok{res.test[}\KeywordTok{order}\NormalTok{(res.test$status,res.test$q),]}
+\KeywordTok{kable}\NormalTok{(}\KeywordTok{head}\NormalTok{(res.test))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[c]{@{}lllrrl@{}}
+\toprule
+& rho & rho2 & p & q & status\tabularnewline
+\midrule
+\endhead
+5300 & NA & NA & 0.0010278 & 0.0073287 & 1\tabularnewline
+5172 & NA & NA & 0.0010929 & 0.0076815 & 1\tabularnewline
+5272 & NA & NA & 0.0011985 & 0.0081897 & 1\tabularnewline
+5190 & NA & NA & 0.0021005 & 0.0130817 & 1\tabularnewline
+5385 & NA & NA & 0.0033330 & 0.0202449 & 1\tabularnewline
+5191 & NA & NA & 0.0052412 & 0.0306984 & 1\tabularnewline
+\bottomrule
+\end{longtable}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{table}\NormalTok{(res.test$status)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  1  2 
+##  9 84
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# test weather the MGS are also differentially abundant with the class}
+\NormalTok{res.test.mgs <-}\StringTok{ }\KeywordTok{testRelations}\NormalTok{(}\DataTypeTok{data=}\NormalTok{mgs.mean.vect, }\DataTypeTok{trait=}\NormalTok{class,}\DataTypeTok{type=}\StringTok{"wilcoxon"}\NormalTok{)}
+\KeywordTok{kable}\NormalTok{(res.test.mgs[res.test.mgs$q<}\FloatTok{0.05}\NormalTok{,])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[c]{@{}lllrrl@{}}
+\toprule
+& rho & rho2 & p & q & status\tabularnewline
+\midrule
+\endhead
+319\_ & NA & NA & 0.0007663 & 0.0022988 & 2\tabularnewline
+4373\_16 & NA & NA & 0.0000000 & 0.0000000 & 2\tabularnewline
+\bottomrule
+\end{longtable}
+
+In the example above we tested whether the first 500 genes of this test
+dataset are differentially abundant between the groups 1 and 2. Indeed
+there are 9 genes enriched in 1 and 84 in the second group after
+multiple testing adjustment. We performed this test also on the vectors
+of the MGS and two of them are also differentially abundant.
+
+\section{Conclusion}\label{conclusion}
+
+\texttt{momr} is a very useful package for quantitative metagenomics and
+only the main functionalities are described here. The package also
+allows to perform // computing using the map-reduce principles. We are
+constantly optimizing algorithms and adding new tools so that it really
+becomes easy to explore QM datasets. The authors would like to
+acknowledge the very exciting and fruitful environment that MetaHIT
+community created.
+
+\section{References}\label{references}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\itemsep1pt\parskip0pt\parsep0pt
+\item
+  Le Chatelier, Emmanuelle, Trine Nielsen, Junjie Qin, Edi Prifti, Falk
+  Hildebrand, Gwen Falony, Mathieu Almeida, et al ``Richness of human
+  gut microbiome correlates with metabolic markers.'' Nature 500, no.
+  7464 (April 9, 2014): 541--546.\\
+\item
+  Qin, Junjie, Ruiqiang Li, Jeroen Raes, Manimozhiyan Arumugam,
+  Kristoffer Solvsten Burgdorf, Chaysavanh Manichanh, Trine Nielsen, et
+  al ``A human gut microbial gene catalogue established by metagenomic
+  sequencing.'' Nature 464, no. 7285 (March 4, 2010): 59--65.\\
+\item
+  Mortazavi, Ali, Brian A Williams, Kenneth McCue, Lorian Schaeffer, and
+  Barbara Wold. ``Mapping and quantifying mammalian transcriptomes by
+  RNA-Seq..'' Nature Methods 5, no. 7 (July 2008): 621--628.\\
+\item
+  Nielsen, H Bjørn, Mathieu Almeida, Agnieszka Sierakowska Juncker,
+  Simon Rasmussen, Junhua Li, Shinichi Sunagawa, Damian R Plichta, et al
+  ``Identification and assembly of genomes and genetic elements in
+  complex metagenomic samples without using reference genomes.'' Nature
+  biotechnology (July 6, 2014): 1--11.
+\end{enumerate}
+
+\end{document}

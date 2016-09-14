@@ -1,5 +1,6 @@
 #' \code{testRelations} 
 #' @title testRelations
+#' @export
 #' @description This function applies a statistical test either a correlation (spearman, pearson), 
 #'      wilcoxon or t.test as a function of a given phenotype. It will return a matrix of probabilities
 #'      p and q values along with the correlation coefficient or the enrichment variable when a binary parameter.
@@ -15,7 +16,9 @@
 #' @return a matrix with analytical results (correlation tests) indicating rho, rho2, p and q values for each parameter tested
 #' @note New addon taking into account a trait for correlation, when it is a two class variable with the same number of elements
 #'      a correlation between both groups is performed
-testRelations <- function (data, trait, type, restrict = rep(TRUE, ncol(data)), multiple.adjust = "BH", paired = FALSE, debug=FALSE) {
+testRelations <- function (data, trait, type, restrict = rep(TRUE, ncol(data)), 
+                           multiple.adjust = "BH", paired = FALSE, debug = FALSE) 
+{
   trait.val <- names(table(trait))
   res <- as.data.frame(matrix(NA, nrow = nrow(data), ncol = 5))
   rownames(res) <- rownames(data)
@@ -26,48 +29,47 @@ testRelations <- function (data, trait, type, restrict = rep(TRUE, ncol(data)), 
     }
     if (type == "wilcoxon" | type == "t.test") {
       if (type == "wilcoxon") {
-        if(debug) print("Executing Wilcoxon test")
+        if (debug) 
+          print("Executing Wilcoxon test")
         for (i in 1:nrow(data)) {
           if (i%%1000 == 0) {
             print(i)
           }
-          if(all(rowSums(table(trait[restrict], data[i, restrict]))!=0) & 
-             nrow(table(trait[restrict], data[i, restrict]))==2){ # if enough observations for each class
-            tmp <- wilcox.test(data[i, restrict] ~ trait[restrict], paired = paired)
-            res[i, "p"] <- tmp$p.value
-            if (mean(data[i, restrict][trait == trait.val[1]],na.rm=TRUE) > 
-                mean(data[i, restrict][trait == trait.val[2]],na.rm=TRUE)) {
+          tmp <- wilcox.test(data[i, restrict] ~ trait[restrict], 
+                             paired = paired)
+          res[i, "p"] <- tmp$p.value
+          if(res[i, "p"]=="NaN"){
+            res[i, "status"] <- NA
+          } else {
+            if (mean(data[i, restrict][trait == trait.val[1]]) > 
+                mean(data[i, restrict][trait == trait.val[2]])) {
               res[i, "status"] <- trait.val[1]
-            }else {
+            } else {
               res[i, "status"] <- trait.val[2]
             }
-          }else{
-            res[i, "p"] <- NA
-            res[i, "status"] <- NA
           }
         }
         res[, 4] <- p.adjust(res[, "p"], method = multiple.adjust)
       }
       else {
-        if(debug) print("Executing T test")
+        if (debug) 
+          print("Executing T test")
         for (i in 1:nrow(data)) {
           if (i%%1000 == 0) {
             print(i)
           }
-          if(all(rowSums(table(trait[restrict], data[i, restrict]))>2) & 
-             nrow(table(trait[restrict], data[i, restrict]))==2){ # if enough observations for each class
-            tmp <- t.test(data[i, restrict] ~ trait[restrict], paired = paired)
-            res[i, "p"] <- tmp$p.value
-            if (mean(data[i, restrict][trait == trait.val[1]],na.rm=TRUE) > 
-                mean(data[i, restrict][trait == trait.val[2]],na.rm=TRUE)) {
+          tmp <- t.test(data[i, restrict] ~ trait[restrict], 
+                        paired = paired)
+          res[i, "p"] <- tmp$p.value
+          if(res[i, "p"]=="NaN"){
+            res[i, "status"] <- NA
+          } else {
+            if (mean(data[i, restrict][trait == trait.val[1]]) > 
+                mean(data[i, restrict][trait == trait.val[2]])) {
               res[i, "status"] <- trait.val[1]
-            }
-            else {
+            } else {
               res[i, "status"] <- trait.val[2]
             }
-          }else{
-            res[i, "p"] <- NA
-            res[i, "status"] <- NA
           }
         }
         res[, 4] <- p.adjust(res[, "p"], method = multiple.adjust)
@@ -79,20 +81,25 @@ testRelations <- function (data, trait, type, restrict = rep(TRUE, ncol(data)), 
   }
   else {
     if (type == "spearman") {
-      if(paired){ # correlate two vectors split by trait in two classes
-        if(debug) print("Entering correlation mode between two classes")
-        if(length(table(trait))!=2 | table(trait)[1]!=table(trait)[2]){
+      if (paired) {
+        if (debug) 
+          print("Entering correlation mode between two classes")
+        if (length(table(trait)) != 2 | table(trait)[1] != 
+            table(trait)[2]) {
           stop("Sorry, trait does not seem to be a 2-level categorical variable or with the same prevalence")
         }
-        
-        # run the correlation
-        cl1 <- names(table(trait)[1]); cl1.ind <- trait==cl1; cl2 <- names(table(trait)[2]); cl2.ind <- trait==cl2
-        if(debug) print("Executing Spearman correlation")
+        cl1 <- names(table(trait)[1])
+        cl1.ind <- trait == cl1
+        cl2 <- names(table(trait)[2])
+        cl2.ind <- trait == cl2
+        if (debug) 
+          print("Executing Spearman correlation")
         for (i in 1:nrow(data)) {
           if (i%%1000 == 0) {
             print(i)
           }
-          tmp <- Hmisc::rcorr(data[i, cl1.ind], data[i, cl2.ind], type = "spearman")
+          tmp <- Hmisc::rcorr(data[i, cl1.ind], data[i, 
+                                                     cl2.ind], type = "spearman")
           res[i, 1] <- tmp$r[1, 2]
           if (!is.na(res[i, 1])) {
             if (res[i, 1] > 0) {
@@ -106,11 +113,16 @@ testRelations <- function (data, trait, type, restrict = rep(TRUE, ncol(data)), 
           res[i, 3] <- tmp$P[1, 2]
         }
         res[, 4] <- p.adjust(res[, "p"], method = multiple.adjust)
-      }else{
-        if(debug) print("Executing Spearman correlation")
+      }
+      else {
+        if (debug) 
+          print("Executing Spearman correlation")
         for (i in 1:nrow(data)) {
-          if (i%%1000 == 0) { print(i) }
-          tmp <- Hmisc::rcorr(data[i, restrict], trait[restrict], type = "spearman")
+          if (i%%1000 == 0) {
+            print(i)
+          }
+          tmp <- Hmisc::rcorr(data[i, restrict], trait[restrict], 
+                              type = "spearman")
           res[i, 1] <- tmp$r[1, 2]
           if (!is.na(res[i, 1])) {
             if (res[i, 1] > 0) {
@@ -123,24 +135,28 @@ testRelations <- function (data, trait, type, restrict = rep(TRUE, ncol(data)), 
           res[i, 2] <- res[i, 1]^2
           res[i, 3] <- tmp$P[1, 2]
         }
-        res[, 4] <- p.adjust(res[, "p"], method = multiple.adjust) 
+        res[, 4] <- p.adjust(res[, "p"], method = multiple.adjust)
       }
     }
     else {
-      if(paired){ # correlate two vectors split by trait in two classes
-        if(debug) print("Entering correlation mode between two classes")
-        if(length(table(trait))!=2 | table(trait)[1]!=table(trait)[2]){
+      if (paired) {
+        if (debug) 
+          print("Entering correlation mode between two classes")
+        if (length(table(trait)) != 2 | table(trait)[1] != 
+            table(trait)[2]) {
           stop("Sorry, trait does not seem to be a 2-level categorical variable or with the same prevalence")
         }
-        
-        # run the correlation
-        cl1 <- names(table(trait)[1]); cl1.ind <- trait==cl1; cl2 <- names(table(trait)[2]); cl2.ind <- trait==cl2
+        cl1 <- names(table(trait)[1])
+        cl1.ind <- trait == cl1
+        cl2 <- names(table(trait)[2])
+        cl2.ind <- trait == cl2
         print("Executing Pearson correlation")
         for (i in 1:nrow(data)) {
           if (i%%1000 == 0) {
             print(i)
           }
-          tmp <- Hmisc::rcorr(data[i, cl1.ind], data[i, cl2.ind], type = "pearson")
+          tmp <- Hmisc::rcorr(data[i, cl1.ind], data[i, 
+                                                     cl2.ind], type = "pearson")
           res[i, 1] <- tmp$r[1, 2]
           if (!is.na(res[i, 1])) {
             if (res[i, 1] > 0) {
@@ -154,13 +170,16 @@ testRelations <- function (data, trait, type, restrict = rep(TRUE, ncol(data)), 
           res[i, 3] <- tmp$P[1, 2]
         }
         res[, 4] <- p.adjust(res[, "p"], method = multiple.adjust)
-      }else{
-        if(debug) print("Executing Pearson correlation")
+      }
+      else {
+        if (debug) 
+          print("Executing Pearson correlation")
         for (i in 1:nrow(data)) {
           if (i%%1000 == 0) {
             print(i)
           }
-          tmp <- Hmisc::rcorr(data[i, restrict], trait[restrict], type = "pearson")
+          tmp <- Hmisc::rcorr(data[i, restrict], trait[restrict], 
+                              type = "pearson")
           res[i, 1] <- tmp$r[1, 2]
           if (!is.na(res[i, 1])) {
             if (res[i, 1] > 0) {
@@ -182,6 +201,9 @@ testRelations <- function (data, trait, type, restrict = rep(TRUE, ncol(data)), 
 
 #' \code{hierClust} 
 #' @title hierClust
+#' @export
+#' @import gplots
+#' @export
 #' @description This function computes the pairwise distance between samples and computes a hierarchical clustering
 #' that is further depicted as a heatmap graphic
 #' @author Edi Prifti
@@ -221,25 +243,25 @@ hierClust <- function (data, side = "col", dist = "correlation", cor.type = "spe
     diag(mat.rho) <- 1 # add the diag again
     if (plot) {
       if (is.null(side.col.c) & is.null(side.col.r)) { # if none is provided
-        gplots::heatmap.2(mat.rho, scale = "none", trace = "none", 
+        heatmap.2(mat.rho, scale = "none", trace = "none", 
                           Rowv = as.dendrogram(mat.hclust), Colv = as.dendrogram(mat.hclust), 
                           margins = c(6, 6), cex.axis = 0.7)
       } else {
         if (is.null(side.col.c)){ # if column class is not provided but the row is
           if (length(side.col.r) != ncol(mat.rho)) {warning("side.col.r must be a character vector of entry length")}
-          gplots::heatmap.2(mat.rho, scale = "none", trace = "none", 
+          heatmap.2(mat.rho, scale = "none", trace = "none", 
                             Rowv = as.dendrogram(mat.hclust), Colv = as.dendrogram(mat.hclust), 
                             margins = c(6, 6), cex.axis = 0.7, RowSideColors=side.col.r)
         }else{ # if row class is not provided but the culumn is
           if (is.null(side.col.r)){
             if (length(side.col.c) != ncol(mat.rho)) {warning("side.col.c must be a character vector of entry length")}
-            gplots::heatmap.2(mat.rho, scale = "none", trace = "none", 
+            heatmap.2(mat.rho, scale = "none", trace = "none", 
                               Rowv = as.dendrogram(mat.hclust), Colv = as.dendrogram(mat.hclust), 
                               margins = c(6, 6), cex.axis = 0.7, ColSideColors=side.col.c)
           } else { # if both classes are provided
             if (length(side.col.r) != ncol(mat.rho)) {warning("side.col.r must be a character vector of entry length")}
             if (length(side.col.c) != ncol(mat.rho)) {warning("side.col.c must be a character vector of entry length")}
-            gplots::heatmap.2(mat.rho, scale = "none", trace = "none", 
+            heatmap.2(mat.rho, scale = "none", trace = "none", 
                               Rowv = as.dendrogram(mat.hclust), Colv = as.dendrogram(mat.hclust), 
                               margins = c(6, 6), cex.axis = 0.7, ColSideColors=side.col.c, RowSideColors=side.col.r)
           }
@@ -254,11 +276,14 @@ hierClust <- function (data, side = "col", dist = "correlation", cor.type = "spe
 
 #' \code{filt.hierClust} 
 #' @title filt.hierClust
+#' @export
 #' @description This function takes as input a square similarity matrix and searches for clusters of samples with strong associations
 #' and extracts the sub matrix with the closely related sampless. Only positive correlations are considered here.
+#' @import gplots
 #' @author Emmanuelle Le Chatelier & Edi Prifti
 #' @param mat.rho : square correlation matrix with ids (can be used for also other than just samples)
 #' @param hclust.method : the hierarchical clustering method, by default it is the ward.D method
+#' @param margins : change margins of the graph (default = c(6, 6))
 #' @param side.col.c : a vector of colors to be applied in the columns, usually depincting a class
 #' @param side.col.r : a vector of colors to be applied in the rows, usually depincting a class
 #' @param size : the number of samples in the resulting ordered matrix
@@ -266,74 +291,105 @@ hierClust <- function (data, side = "col", dist = "correlation", cor.type = "spe
 #' @param filt : default is 0.5 and is the filtering threshold to be applied
 #' @return it will return a matrix with samples in rows and their closely related ones on the columns along with the 
 #' correlation score.
-filt.hierClust <- function (mat.rho, hclust.method = "ward.D", side.col.c = NULL, side.col.r = NULL, size=10, plot = TRUE, filt = 0.5) {
-  rho <- mat.rho # keep it as a backup
+filt.hierClust <- function (mat.rho, hclust.method = "ward", margins = c(6, 6), side.col.c = NULL, # margins added as option
+                            side.col.r = NULL, size=10, plot = TRUE, filt = 0.5) 
+{
+  rho <- mat.rho
   diag(mat.rho) <- 0
-
-  if((nrow(mat.rho)-1) < size){
-    size <- nrow(mat.rho)
-    warning(paste("There are less than", size, "samples. Setting size to the number of rows"))
+  if ((nrow(mat.rho) -1) < size) 
+  {    
+    warning(paste("There are less than", size, "samples"))
     size <- nrow(mat.rho) -1
   }
   
-  res <- as.data.frame(matrix(NA, ncol(mat.rho), size*2));  rownames(res) <- colnames(mat.rho)
-  colnames(res) <- paste(c("Hit","Hit_rho"),sort(c(1:size,1:size)),sep="_")
-  
-  # For each row sort the samples and extract the best samples and put in the res the collected data
-  for (i in 1:nrow(mat.rho)){
-    tmp <- sort(mat.rho[i,], decreasing=T)
+  res <- as.data.frame(matrix(NA, ncol(mat.rho), size * 2))
+  rownames(res) <- colnames(mat.rho)
+  colnames(res) <- paste(c("Hit", "Hit_rho"), sort(c(1:size, 1:size)), sep = "_")
+  for (i in 1:nrow(mat.rho)) 
+  {
+    tmp <- sort(mat.rho[i, ], decreasing = T)
     tmp <- tmp[1:size]
-    res[i,seq(1,size*2,by=2)] <- names(tmp)
-    res[i,seq(2,size*2,by=2)] <- round(tmp,3)
-    sel <- colnames(res)[res[i,]==0]
-    sel <- gsub("rho_","",sel)
-    res[i,sel] <- 0
+    res[i, seq(1, size * 2, by = 2)] <- names(tmp)
+    res[i, seq(2, size * 2, by = 2)] <- round(tmp, 3)
+    sel <- colnames(res)[res[i, ] == 0]
+    sel <- gsub("rho_", "", sel)
+    res[i, sel] <- 0
   }
-  
-  N <- apply(mat.rho,1,max) # find the maximums
-  N <- N>filt # transform it in a logical index
-  mat.rho <- rho[N,N] # keep only the sub matrix which is very connected
-  if(all(dim(mat.rho)!=0)){
-    # sub select the classes if they are not null
-    if(!is.null(side.col.c)) side.col.c <- side.col.c[N] 
-    if(!is.null(side.col.r)) side.col.r <- side.col.r[N] 
+  N <- apply(mat.rho, 1, max)
+  N <- N > filt
+  mat.rho <- rho[N, N]
+  if (all(dim(mat.rho) != 0)) 
+  {
+    if (!is.null(side.col.c)) 
+    {
+      side.col.c <- side.col.c[N]
+    }
+    if (!is.null(side.col.r)) 
+    {
+      side.col.r <- side.col.r[N]      
+    }
     diag(mat.rho) <- NA
-    # commpute distance as 1-correlation
     mat.dist <- as.dist(1 - mat.rho)
-    # compute hierarchical clustering
     mat.hclust <- hclust(d = mat.dist, method = hclust.method)
     diag(mat.rho) <- 1
-    if (plot) {
-      if (is.null(side.col.c) & is.null(side.col.r)) { # if none is provided
-        gplots::heatmap.2(mat.rho, scale = "none", trace = "none", 
+    if (plot) 
+    {
+      if (is.null(side.col.c) & is.null(side.col.r)) 
+      {
+        heatmap.2(mat.rho, scale = "none", trace = "none", 
                           Rowv = as.dendrogram(mat.hclust), Colv = as.dendrogram(mat.hclust), 
-                          margins = c(6, 6), cex.axis = 0.7)
-      } else {
-        if (is.null(side.col.c)){ # if column class is not provided but the row is
-          if (length(side.col.r) != ncol(mat.rho)) {warning("side.col.r must be a character vector of entry length")}
-          gplots::heatmap.2(mat.rho, scale = "none", trace = "none", 
-                            Rowv = as.dendrogram(mat.hclust), Colv = as.dendrogram(mat.hclust), 
-                            margins = c(6, 6), cex.axis = 0.7, RowSideColors=side.col.r)
-        }else{ # if row class is not provided but the culumn is
-          if (is.null(side.col.r)){
-            if (length(side.col.c) != ncol(mat.rho)) {warning("side.col.c must be a character vector of entry length")}
-            gplots::heatmap.2(mat.rho, scale = "none", trace = "none", 
-                              Rowv = as.dendrogram(mat.hclust), Colv = as.dendrogram(mat.hclust), 
-                              margins = c(6, 6), cex.axis = 0.7, ColSideColors=side.col.c)
-          } else { # if both classes are provided
-            if (length(side.col.r) != ncol(mat.rho)) {warning("side.col.r must be a character vector of entry length")}
-            if (length(side.col.c) != ncol(mat.rho)) {warning("side.col.c must be a character vector of entry length")}
-            gplots::heatmap.2(mat.rho, scale = "none", trace = "none", 
-                              Rowv = as.dendrogram(mat.hclust), Colv = as.dendrogram(mat.hclust), 
-                              margins = c(6, 6), cex.axis = 0.7, ColSideColors=side.col.c, RowSideColors=side.col.r)
+                          margins = margins, cex.axis = 0.7)
+      }
+      else {
+        if (is.null(side.col.c)) 
+        {
+          if (length(side.col.r) != ncol(mat.rho)) 
+          {
+            warning("side.col.r must be a character vector of entry length")
+          }
+          heatmap.2(mat.rho, scale = "none", 
+                            trace = "none", Rowv = as.dendrogram(mat.hclust), 
+                            Colv = as.dendrogram(mat.hclust), margins = margins, 
+                            cex.axis = 0.7, RowSideColors = side.col.r)
+        }
+        else 
+        {
+          if (is.null(side.col.r)) 
+          {
+            if (length(side.col.c) != ncol(mat.rho)) 
+            {
+              warning("side.col.c must be a character vector of entry length")
+            }
+            heatmap.2(mat.rho, scale = "none", 
+                              trace = "none", Rowv = as.dendrogram(mat.hclust), 
+                              Colv = as.dendrogram(mat.hclust), margins = margins, 
+                              cex.axis = 0.7, ColSideColors = side.col.c)
+          }
+          else 
+          {
+            if (length(side.col.r) != ncol(mat.rho)) 
+            {
+              warning("side.col.r must be a character vector of entry length")
+            }
+            if (length(side.col.c) != ncol(mat.rho)) 
+            {
+              warning("side.col.c must be a character vector of entry length")
+            }
+            heatmap.2(mat.rho, scale = "none", 
+                              trace = "none", Rowv = as.dendrogram(mat.hclust), 
+                              Colv = as.dendrogram(mat.hclust), margins = margins, 
+                              cex.axis = 0.7, ColSideColors = side.col.c, 
+                              RowSideColors = side.col.r)
           }
         }
       }
     }
-  }else{
-    warning(paste("There are no related samples above the threshold",filt))
   }
-  return(res)  
+  else 
+  {
+    warning(paste("There are no related samples above the threshold", filt))
+  }
+  return(res)
 }
 
 
@@ -473,7 +529,8 @@ phenoPairwiseRelations <- function(data, adjust="BH", verbose=FALSE){
 }
 
 
-#' \code{extractSignificant} 
+#' \code{extractSignificant}
+#' @export 
 #' @title extractSignificant
 #' @description This function will extract a list of vectors p- or q-values from an object produced by phenoPairwiseRelations.
 #' @author Edi Prifti
