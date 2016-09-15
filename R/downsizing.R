@@ -53,6 +53,7 @@ indexReadsGC <- function(v, silent=TRUE)
 
 #' \code{sampleRandomly} 
 #' @title sampleRandomly
+#' @export
 #' @description This function samples randomly a unique subset of the given indexed vector
 #' @author Edi Prifti
 #' @param v.ind : a character vector of the indexed reads
@@ -67,6 +68,7 @@ sampleRandomly <- function(v.ind, level=11000000)
 
 #' \code{countSampledGenes} 
 #' @title countSampledGenes
+#' @export
 #' @description counts the number of genes that have been sampled by un_indexing
 #' @author Edi Prifti
 #' @param v.samp : a character vector of the sampled indexed reads (output of sampleRandlomly)
@@ -80,6 +82,7 @@ countSampledGenes <- function(v.samp)
 
 #' \code{countSampledGenesGC} 
 #' @title countSampledGenesGC
+#' @export
 #' @description counts the number of genes that have been sampled by un_indexing
 #' @author Edi Prifti
 #' @param v.samp : a character vector of the sampled indexed reads (output of sampleRandlomly)
