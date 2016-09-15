@@ -11,10 +11,6 @@ Description: 'MetaOMineR' suite is a set of R packages that offers many function
 License: Artistic-2.0
 Depends: R (>= 3.3)
 Imports:  
-      base,
-      stats,
-      utils,
-      graphics,
       Hmisc, 
       gplots, 
       nortest,

@@ -9,11 +9,10 @@
 \else % if luatex or xelatex
   \ifxetex
     \usepackage{mathspec}
-    \usepackage{xltxtra,xunicode}
   \else
     \usepackage{fontspec}
   \fi
-  \defaultfontfeatures{Mapping=tex-text,Scale=MatchLowercase}
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
   \newcommand{\euro}{€}
 \fi
 % use upquote if available, for straight quotes in verbatim environments
@@ -24,6 +23,14 @@
 \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
 }{}
 \usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\PassOptionsToPackage{usenames,dvipsnames}{color} % color is loaded by hyperref
+\hypersetup{unicode=true,
+            pdftitle={MetaOMineR},
+            pdfauthor={Edi Prifti \& Emmanuelle Le Chatelier},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
 \usepackage{color}
 \usepackage{fancyvrb}
 \newcommand{\VerbBar}{|}
@@ -38,17 +45,34 @@
 \newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{{#1}}}
 \newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{{#1}}}
 \newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{{#1}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{{#1}}}
 \newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{{#1}}}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{{#1}}}
 \newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{{#1}}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{{#1}}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{{#1}}}
+\newcommand{\ImportTok}[1]{{#1}}
 \newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{{#1}}}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{{#1}}}}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{{#1}}}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{{#1}}}}}
 \newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{{#1}}}
-\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{{#1}}}
 \newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{{#1}}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{{#1}}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{{#1}}}}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{{#1}}}}
+\newcommand{\BuiltInTok}[1]{{#1}}
+\newcommand{\ExtensionTok}[1]{{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{{#1}}}
 \newcommand{\RegionMarkerTok}[1]{{#1}}
-\newcommand{\ErrorTok}[1]{\textbf{{#1}}}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{{#1}}}}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{{#1}}}}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{{#1}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{{#1}}}}
 \newcommand{\NormalTok}[1]{{#1}}
 \usepackage{longtable,booktabs}
-\usepackage{graphicx}
+\usepackage{graphicx,grffile}
 \makeatletter
 \def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
 \def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
@@ -57,26 +81,11 @@
 % margins by default, and it is still possible to overwrite the defaults
 % using explicit options in \includegraphics[width, height, ...]{}
 \setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
-\ifxetex
-  \usepackage[setpagesize=false, % page size defined by xetex
-              unicode=false, % unicode breaks when used with xetex
-              xetex]{hyperref}
-\else
-  \usepackage[unicode=true]{hyperref}
-\fi
-\hypersetup{breaklinks=true,
-            bookmarks=true,
-            pdfauthor={Edi Prifti \& Emmanuelle Le Chatelier},
-            pdftitle={MetaOMineR},
-            colorlinks=true,
-            citecolor=blue,
-            urlcolor=blue,
-            linkcolor=magenta,
-            pdfborder={0 0 0}}
-\urlstyle{same}  % don't use monospace font for urls
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{6pt plus 2pt minus 1pt}
 \setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
 \setcounter{secnumdepth}{0}
 
 %%% Use protect on footnotes to avoid problems with footnotes in titles
@@ -106,13 +115,20 @@
 
 
 
-\begin{document}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
 
+\begin{document}
 \maketitle
 
-
 {
-\hypersetup{linkcolor=black}
 \setcounter{tocdepth}{3}
 \tableofcontents
 }
@@ -157,9 +173,11 @@ To see what data objects are contained in the package we type:
 \end{Highlighting}
 \end{Shaded}
 
-We will see four objects\\\texttt{- hs\_3.3\_metahit\_genesize}
-\texttt{- hs\_3.3\_metahit\_sample\_dat\_freq}
-\texttt{- hs\_3.3\_metahit\_sample\_dat\_raw}\\\texttt{- mgs\_hs\_3.3\_metahit\_sup500}
+We will see four objects\\
+\texttt{-\ hs\_3.3\_metahit\_genesize}
+\texttt{-\ hs\_3.3\_metahit\_sample\_dat\_freq}
+\texttt{-\ hs\_3.3\_metahit\_sample\_dat\_raw}\\
+\texttt{-\ mgs\_hs\_3.3\_metahit\_sup500}
 
 \subsection{Loading the data}\label{loading-the-data}
 
@@ -236,7 +254,7 @@ normalization approached shortly in the future.
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
-\itemsep1pt\parskip0pt\parsep0pt
+\tightlist
 \item
   RPKM \textbf{(Reads Per Kilobase per Million reads mapped)} is one of
   the first methods used in QM and was inspired by the RNA-Seq field
@@ -389,11 +407,11 @@ to be normalized as shown above.
 ## [1] "2 Sample MH0087 with 7346 reads and 160 genes"
 ## [1] "        step 1 with 79 genes"
 ## [1] "3 Sample MH0444 with 37988 reads and 384 genes"
-## [1] "        step 1 with 108 genes"
+## [1] "        step 1 with 106 genes"
 ## [1] "4 Sample MH0156 with 20868 reads and 333 genes"
 ## [1] "        step 1 with 115 genes"
 ## [1] "5 Sample MH0333 with 5671 reads and 182 genes"
-## [1] "        step 1 with 105 genes"
+## [1] "        step 1 with 106 genes"
 \end{verbatim}
 
 \begin{Shaded}
@@ -409,9 +427,9 @@ to be normalized as shown above.
 \endhead
 9904 & 0 & 0 & 0 & 0 & 0\tabularnewline
 9905 & 0 & 0 & 0 & 0 & 0\tabularnewline
-9906 & 0 & 0 & 0 & 0 & 0\tabularnewline
+9906 & 0 & 0 & 2 & 0 & 0\tabularnewline
 9907 & 0 & 0 & 0 & 0 & 0\tabularnewline
-9908 & 0 & 3 & 0 & 1 & 2\tabularnewline
+9908 & 0 & 2 & 0 & 1 & 1\tabularnewline
 9909 & 0 & 0 & 0 & 0 & 0\tabularnewline
 \bottomrule
 \end{longtable}
@@ -441,7 +459,7 @@ generating the frequency matrix using \texttt{normFreqRPKM} function.
 
 A simple number can describe the complexity of an ecosystem that we call
 here richness. That is the number of genes that are found to be present
-\texttt{(gene\_abundance \textgreater{} 0)} in a given sample. Indeed,
+\texttt{(gene\_abundance\ \textgreater{}\ 0)} in a given sample. Indeed,
 different studies have shown that the richness is associated with
 different aspects of the ecosystem \emph{(Le Chatelier et al, Nature,
 2013)} and correlates strongly with the number of present microbial
@@ -477,7 +495,7 @@ times. Finally we compute a mean estimation of the multiple drawings.
 
 \begin{verbatim}
 ##    MH0277    MH0087    MH0444    MH0156    MH0333    MH0233 
-##  54.00000  78.33333 113.70000 108.50000 105.26667 149.70000
+##  54.00000  77.23333 111.70000 109.90000 105.56667 150.80000
 \end{verbatim}
 
 \begin{Shaded}
@@ -488,7 +506,7 @@ times. Finally we compute a mean estimation of the multiple drawings.
 
 \begin{verbatim}
 ##   MH0277   MH0087   MH0444   MH0156   MH0333   MH0233 
-## 0.000000 2.832488 5.045654 4.747050 4.346488 6.670315
+## 0.000000 4.384010 4.793314 6.423824 4.868501 6.466892
 \end{verbatim}
 
 Notice that the standard deviation is quite small for 30 random
@@ -562,16 +580,16 @@ down\_6e-04M & down\_0.005M & down\_0.01M & down\_0.015M &
 down\_0.02M\tabularnewline
 \midrule
 \endhead
-82 & 146 & NA & NA & NA\tabularnewline
-74 & 141 & NA & NA & NA\tabularnewline
-80 & 144 & NA & NA & NA\tabularnewline
-70 & 143 & NA & NA & NA\tabularnewline
-82 & 143 & NA & NA & NA\tabularnewline
-73 & 143 & NA & NA & NA\tabularnewline
-78 & 144 & NA & NA & NA\tabularnewline
-78 & 142 & NA & NA & NA\tabularnewline
-78 & 142 & NA & NA & NA\tabularnewline
-77 & 143 & NA & NA & NA\tabularnewline
+80 & 146 & NA & NA & NA\tabularnewline
+77 & 141 & NA & NA & NA\tabularnewline
+73 & 146 & NA & NA & NA\tabularnewline
+79 & 147 & NA & NA & NA\tabularnewline
+74 & 144 & NA & NA & NA\tabularnewline
+76 & 143 & NA & NA & NA\tabularnewline
+73 & 144 & NA & NA & NA\tabularnewline
+80 & 138 & NA & NA & NA\tabularnewline
+83 & 143 & NA & NA & NA\tabularnewline
+77 & 146 & NA & NA & NA\tabularnewline
 \bottomrule
 \end{longtable}
 
@@ -593,12 +611,12 @@ column contain the mean-ed downsized values for each repetition.
 down\_0.02M\tabularnewline
 \midrule
 \endhead
-MH0277 & 49.4 & NA & NA & NA & NA\tabularnewline
-MH0087 & 77.2 & 143.1 & NA & NA & NA\tabularnewline
-MH0444 & 106.3 & 212.3 & 266.9 & 293.7 & 323.9\tabularnewline
-MH0156 & 102.8 & 234.2 & 278.0 & 307.2 & 329.8\tabularnewline
-MH0333 & 101.4 & 177.7 & NA & NA & NA\tabularnewline
-MH0233 & 144.9 & 313.4 & 373.4 & 415.4 & 443.1\tabularnewline
+MH0277 & 49.8 & NA & NA & NA & NA\tabularnewline
+MH0087 & 77.2 & 143.8 & NA & NA & NA\tabularnewline
+MH0444 & 107.0 & 215.0 & 260.4 & 294.9 & 324.2\tabularnewline
+MH0156 & 107.3 & 227.7 & 283.1 & 309.9 & 329.9\tabularnewline
+MH0333 & 100.6 & 177.4 & NA & NA & NA\tabularnewline
+MH0233 & 146.6 & 311.8 & 376.5 & 413.4 & 443.2\tabularnewline
 \bottomrule
 \end{longtable}
 
@@ -619,12 +637,12 @@ as illustrated in Figure 3.
 down\_0.015M\_una & down\_0.02M\_una\tabularnewline
 \midrule
 \endhead
-MH0277 & 49 & 72 & 73 & 76 & 76\tabularnewline
-MH0087 & 77 & 143 & 163 & 177 & 184\tabularnewline
-MH0444 & 106 & 212 & 267 & 294 & 324\tabularnewline
-MH0156 & 103 & 234 & 278 & 307 & 330\tabularnewline
-MH0333 & 101 & 178 & 207 & 226 & 237\tabularnewline
-MH0233 & 145 & 313 & 373 & 415 & 443\tabularnewline
+MH0277 & 50 & 78 & 85 & 87 & 89\tabularnewline
+MH0087 & 77 & 144 & 168 & 180 & 189\tabularnewline
+MH0444 & 107 & 215 & 260 & 295 & 324\tabularnewline
+MH0156 & 107 & 228 & 283 & 310 & 330\tabularnewline
+MH0333 & 101 & 177 & 209 & 226 & 238\tabularnewline
+MH0233 & 147 & 312 & 376 & 413 & 443\tabularnewline
 \bottomrule
 \end{longtable}
 
@@ -733,7 +751,7 @@ that are closely related (above a given threshold) as illustrated in
 Figure 5. It also returns a table indicating for each samples the best
 correlated ones and displays a heatmap of the correlation matrix
 restricted to the samples correlated above the filter threshold
-\texttt{(plot=TRUE as default)}.
+\texttt{(plot=TRUE\ as\ default)}.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -902,10 +920,6 @@ the calculated MGS signal in each sample.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{verbatim}
-## The "ward" method has been renamed to "ward.D"; note new "ward.D2"
-\end{verbatim}
-
 \begin{figure}[htbp]
 \centering
 \includegraphics{momr_introduction_files/figure-latex/fig7-1.pdf}
@@ -1043,7 +1057,7 @@ community created.
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
-\itemsep1pt\parskip0pt\parsep0pt
+\tightlist
 \item
   Le Chatelier, Emmanuelle, Trine Nielsen, Junjie Qin, Edi Prifti, Falk
   Hildebrand, Gwen Falony, Mathieu Almeida, et al ``Richness of human
