@@ -24,4 +24,3 @@ plots a heatmap of a matrix composed of correlation values from -1 to 1. The blu
 \author{
 Edi Prifti
 }
-

@@ -28,4 +28,3 @@ and saves them in the disk as RData objects with an incremental name.
 \author{
 Edi Prifti
 }
-

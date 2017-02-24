@@ -23,4 +23,3 @@ sample. This result is a matrix in lines the number of simulations and in column
 \author{
 Edi Prifti & Emmanuelle Le Chatelier
 }
-

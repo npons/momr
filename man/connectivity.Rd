@@ -32,4 +32,3 @@ this connectivity does not use a hard thresholding but is based on a total corre
 \author{
 Emmanuelle le Chatelier & Edi Prifti
 }
-

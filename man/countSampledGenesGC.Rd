@@ -24,4 +24,3 @@ an optimized version for the gene count downsizing
 \author{
 Edi Prifti
 }
-

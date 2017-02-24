@@ -26,4 +26,3 @@ this may be slightly affected by the size of the catalogue when comparing differ
 \author{
 Edi Prifti & Emmanuelle Le Chatelier
 }
-

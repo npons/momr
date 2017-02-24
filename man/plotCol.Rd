@@ -28,4 +28,3 @@ a matrix of colored cells when debugging
 \author{
 Edi Prifti
 }
-

@@ -24,4 +24,3 @@ plots a heatmap of a matrix composed of p-values. Gray is not significant at p=0
 \author{
 Edi Prifti
 }
-

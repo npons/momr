@@ -41,4 +41,3 @@ updated hierClust functions by elechat april 7th 2015 added options SideColors a
 \author{
 Edi Prifti
 }
-

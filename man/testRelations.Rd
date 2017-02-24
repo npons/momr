@@ -41,4 +41,3 @@ New addon taking into account a trait for correlation, when it is a two class va
 \author{
 Edi Prifti & Emmanuelle Le Chatelier
 }
-

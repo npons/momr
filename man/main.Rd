@@ -15,4 +15,3 @@ filters and computes verctors based on gene profiles from a single matrix or a
 \details{
 \code{main}
 }
-

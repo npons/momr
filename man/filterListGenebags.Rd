@@ -28,4 +28,3 @@ This is the former filterListMGS function
 \author{
 Emmanuelle Le Chatelier
 }
-

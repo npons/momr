@@ -27,10 +27,9 @@ sequencing depth. The fitting of the models is based on the n-1 to be closer to 
 \details{
 \code{computeUpsizedGC}
 }
-\author{
-Edi Prifti & Emmanuelle Le Chatelier
-}
 \seealso{
 \code{\link{downsizedRichnessL2T}} and \code{\link{downsizeGC.all}}
 }
-
+\author{
+Edi Prifti & Emmanuelle Le Chatelier
+}

@@ -29,4 +29,3 @@ This function is used to prepare the data and plot different MGS as barcodes.
 \author{
 Emmanuelle Le Chatelier
 }
-

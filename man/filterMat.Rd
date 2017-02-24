@@ -24,4 +24,3 @@ in each individual under a given degree of presence (filt), all sparse values ar
 \author{
 Edi Prifti & Emmanuelle Le Chatelier
 }
-

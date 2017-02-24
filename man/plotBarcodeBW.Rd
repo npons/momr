@@ -23,4 +23,3 @@ plots in black when a signal is different from zero and white otherwise
 \author{
 Edi Prifti
 }
-

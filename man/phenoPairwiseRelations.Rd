@@ -26,4 +26,3 @@ function of the data type. It will adjust the p-value matrix for multiple testin
 \author{
 Edi Prifti
 }
-

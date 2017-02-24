@@ -23,4 +23,3 @@ This function samples randomly a unique subset of the given indexed vector
 \author{
 Edi Prifti
 }
-

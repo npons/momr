@@ -24,4 +24,3 @@ converts a raw count matrix onto a frequency matrix using the TC (total count) n
 \author{
 Edi Prifti
 }
-

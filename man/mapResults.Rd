@@ -30,4 +30,3 @@ This function loads the results once finished and merges them together in one da
 \author{
 Edi Prifti
 }
-

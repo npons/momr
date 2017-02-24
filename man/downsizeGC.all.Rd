@@ -34,4 +34,3 @@ if the downsizing level is higher than the number of reads for a given sample th
 \author{
 Edi Prifti & Emmanuelle Le Chatelier
 }
-

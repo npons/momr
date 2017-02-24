@@ -30,4 +30,3 @@ list of matrix profiles
 \author{
 Edi Prifti & Emmanuelle Le Chatelier
 }
-

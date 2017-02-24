@@ -32,4 +32,3 @@ of groups of genes. It can also restrict the size of the result
 \author{
 Edi Prifti & Emmanuelle Le Chatelier
 }
-

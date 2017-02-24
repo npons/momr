@@ -29,4 +29,3 @@ similar to plotCors but with more levels of colors
 \author{
 Edi Prifti
 }
-

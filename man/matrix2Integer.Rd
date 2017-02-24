@@ -23,4 +23,3 @@ converts numeric matrix into an integer for memory optimization
 \author{
 Edi Prifti
 }
-

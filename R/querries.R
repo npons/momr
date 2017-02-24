@@ -246,7 +246,8 @@ buildMgsFinal <- function (genebag = NULL, mgs.cat, mgs.taxo, profiles, conn = T
       dat <- dat[order(con, decreasing = T), ]
     }
     genebag.list.ordered[[i]] <- dat
-    genebag.list.50[[i]] <- genebag.list.ordered[[i]][1:50,]
+    size.max <- min(50, nrow(dat))
+    genebag.list.50[[i]] <- genebag.list.ordered[[i]][1:size.max,]
   }
   if(!silent & conn) 
   {

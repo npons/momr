@@ -21,4 +21,3 @@ fixes an R base issue with rounding
 \author{
 Edi Prifti
 }
-

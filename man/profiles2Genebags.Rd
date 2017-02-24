@@ -21,4 +21,3 @@ This function will extract from a list of group profiles a list of identifiers o
 \author{
 Edi Prifti
 }
-

@@ -15,4 +15,3 @@ Edi Prifti & Emmanuelle Le Chatelier
 }
 \keyword{data}
 \keyword{gnesize}
-

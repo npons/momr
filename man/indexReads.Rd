@@ -25,4 +25,3 @@ for a given column of the raw count matrix this function indexes the count vecto
 \author{
 Edi Prifti
 }
-

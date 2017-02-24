@@ -21,4 +21,3 @@ This function will extract the p-value from a linear model object. It is used by
 \author{
 Edi Prifti
 }
-

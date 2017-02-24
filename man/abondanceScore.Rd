@@ -23,4 +23,3 @@ Computes the sum of the vectors divided by the prevalence
 \author{
 Edi Prifti
 }
-

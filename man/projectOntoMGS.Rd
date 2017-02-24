@@ -34,4 +34,3 @@ This function takes a list of genes and projects it to a mgs catalogue
 \author{
 Edi Prifti & Emmanuelle Le Chatelier
 }
-

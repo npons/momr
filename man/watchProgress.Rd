@@ -24,4 +24,3 @@ on the input and output folders by comparing the number of output objects.
 \author{
 Edi Prifti
 }
-

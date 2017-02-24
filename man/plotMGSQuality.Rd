@@ -27,4 +27,3 @@ A subset of 50 most connected genes is also plotted the same way.
 \author{
 Edi Prifti
 }
-

@@ -21,4 +21,3 @@ This function will delete the original and treated split temporary files to cela
 \author{
 Edi Prifti
 }
-

@@ -22,4 +22,3 @@ Computes scores of data variation within a given MGS cluster.
 \author{
 Edi Prifti
 }
-

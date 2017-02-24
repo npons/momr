@@ -25,4 +25,3 @@ This function will extract a list of vectors p- or q-values from an object produ
 \author{
 Edi Prifti
 }
-
